@@ -9,18 +9,20 @@ import (
 
 type ScoutServer struct {
 	pb.UnimplementedScoutServiceServer
-	// games map[string]*Game
+	games map[string]*Game
 }
 
 func NewScoutServer() *ScoutServer {
-	return &ScoutServer{}
+	return &ScoutServer{
+		games: make(map[string]*Game),
+	}
 }
 
 func (s *ScoutServer) CreateGame(ctx context.Context, req *pb.CreateGameRequest) (*pb.CreateGameResponse, error) {
 	id := uuid.New().String()
 
-	// game := NewGame(req.NumPlayers)
-	// s.games[id] = game
+	game := NewGame(req.NumPlayers)
+	s.games[id] = game
 
 	return &pb.CreateGameResponse{
 		GameId: id,
