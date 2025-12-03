@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"flag"
-	// "fmt"
+
 	"log"
 	"net"
 	"os"
@@ -12,13 +12,16 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
-	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/peer"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
-	"google.golang.org/grpc/codes"
+
+	pb "scout-ai/proto"
+	"scout-ai/server"
 )
 
 // Generic gRPC server main that:
@@ -32,9 +35,9 @@ import (
 
 func main() {
 	var (
-		addr           = flag.String("addr", ":50051", "gRPC listen address")
-		certFile       = flag.String("tls-cert", "", "TLS certificate file (optional)")
-		keyFile        = flag.String("tls-key", "", "TLS key file (optional)")
+		addr            = flag.String("addr", ":50051", "gRPC listen address")
+		certFile        = flag.String("tls-cert", "", "TLS certificate file (optional)")
+		keyFile         = flag.String("tls-key", "", "TLS key file (optional)")
 		shutdownTimeout = flag.Duration("shutdown-timeout", 10*time.Second, "graceful shutdown timeout")
 	)
 	flag.Parse()
@@ -117,11 +120,11 @@ func main() {
 
 // registerServices is a placeholder where you should register your gRPC services.
 // Example (requires generated pb code):
-//   pb.RegisterYourServiceServer(s, &yourServiceImpl{})
+//
+//	pb.RegisterYourServiceServer(s, &yourServiceImpl{})
 func registerServices(s *grpc.Server) {
-	// TODO: Register your service implementations here.
-	// e.g. myservice.RegisterMyServiceServer(s, myServiceInstance)
-	_ = s // keep compiler happy if empty
+	scoutServer := server.NewScoutServer()
+	pb.RegisterScoutServiceServer(s, scoutServer)
 }
 
 // loggingUnaryInterceptor logs basic info about each unary RPC.
