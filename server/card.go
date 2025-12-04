@@ -1,15 +1,20 @@
 package server
 
+import "fmt"
+
 type Card struct {
 	Value1 int
 	Value2 int
 }
 
-func NewCard(value1, value2 int) *Card {
+func NewCard(value1, value2 int) (*Card, error) {
+	if value1 == 0 || value2 == 0 {
+		return nil, fmt.Errorf("card values cannot be zero")
+	}
 	return &Card{
 		Value1: value1,
 		Value2: value2,
-	}
+	}, nil
 }
 
 func (c *Card) FlipValues() {
