@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ScoutService_CreateGame_FullMethodName = "/scout.ScoutService/CreateGame"
-	ScoutService_Step_FullMethodName       = "/scout.ScoutService/Step"
+	ScoutService_CreateGame_FullMethodName   = "/scout.ScoutService/CreateGame"
+	ScoutService_Step_FullMethodName         = "/scout.ScoutService/Step"
+	ScoutService_GetGameState_FullMethodName = "/scout.ScoutService/GetGameState"
 )
 
 // ScoutServiceClient is the client API for ScoutService service.
@@ -29,6 +30,7 @@ const (
 type ScoutServiceClient interface {
 	CreateGame(ctx context.Context, in *CreateGameRequest, opts ...grpc.CallOption) (*CreateGameResponse, error)
 	Step(ctx context.Context, in *StepRequest, opts ...grpc.CallOption) (*StepResponse, error)
+	GetGameState(ctx context.Context, in *GetGameStateRequest, opts ...grpc.CallOption) (*GetGameStateResponse, error)
 }
 
 type scoutServiceClient struct {
@@ -59,12 +61,23 @@ func (c *scoutServiceClient) Step(ctx context.Context, in *StepRequest, opts ...
 	return out, nil
 }
 
+func (c *scoutServiceClient) GetGameState(ctx context.Context, in *GetGameStateRequest, opts ...grpc.CallOption) (*GetGameStateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetGameStateResponse)
+	err := c.cc.Invoke(ctx, ScoutService_GetGameState_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ScoutServiceServer is the server API for ScoutService service.
 // All implementations must embed UnimplementedScoutServiceServer
 // for forward compatibility.
 type ScoutServiceServer interface {
 	CreateGame(context.Context, *CreateGameRequest) (*CreateGameResponse, error)
 	Step(context.Context, *StepRequest) (*StepResponse, error)
+	GetGameState(context.Context, *GetGameStateRequest) (*GetGameStateResponse, error)
 	mustEmbedUnimplementedScoutServiceServer()
 }
 
@@ -80,6 +93,9 @@ func (UnimplementedScoutServiceServer) CreateGame(context.Context, *CreateGameRe
 }
 func (UnimplementedScoutServiceServer) Step(context.Context, *StepRequest) (*StepResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Step not implemented")
+}
+func (UnimplementedScoutServiceServer) GetGameState(context.Context, *GetGameStateRequest) (*GetGameStateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetGameState not implemented")
 }
 func (UnimplementedScoutServiceServer) mustEmbedUnimplementedScoutServiceServer() {}
 func (UnimplementedScoutServiceServer) testEmbeddedByValue()                      {}
@@ -138,6 +154,24 @@ func _ScoutService_Step_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ScoutService_GetGameState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGameStateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ScoutServiceServer).GetGameState(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ScoutService_GetGameState_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ScoutServiceServer).GetGameState(ctx, req.(*GetGameStateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ScoutService_ServiceDesc is the grpc.ServiceDesc for ScoutService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -152,6 +186,10 @@ var ScoutService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Step",
 			Handler:    _ScoutService_Step_Handler,
+		},
+		{
+			MethodName: "GetGameState",
+			Handler:    _ScoutService_GetGameState_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

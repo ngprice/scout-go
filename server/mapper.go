@@ -1,0 +1,41 @@
+package server
+
+import (
+	pb "scout-ai/proto"
+)
+
+func (g *Game) ToProto() *pb.Game {
+	protoGame := &pb.Game{}
+
+	for _, player := range g.Players {
+		protoGame.Players = append(protoGame.Players, player.ToProto())
+	}
+
+	for _, card := range g.ActiveSet {
+		protoGame.ActiveSet = append(protoGame.ActiveSet, card.ToProto())
+	}
+
+	return protoGame
+}
+
+func (p *Player) ToProto() *pb.Player {
+	hand := make([]*pb.Card, 0)
+	for _, card := range p.Hand {
+		hand = append(hand, card.ToProto())
+	}
+
+	return &pb.Player{
+		Name:         p.Name,
+		Index:        int32(p.Index),
+		Score:        int32(p.Score),
+		ScoutAndShow: p.ScoutAndShow,
+		Hand:         hand,
+	}
+}
+
+func (c *Card) ToProto() *pb.Card {
+	return &pb.Card{
+		Value1: int32(c.Value1),
+		Value2: int32(c.Value2),
+	}
+}

@@ -36,3 +36,11 @@ func (s *ScoutServer) Step(ctx context.Context, req *pb.StepRequest) (*pb.StepRe
 		Done: false,
 	}, nil
 }
+
+func (s *ScoutServer) GetGameState(ctx context.Context, req *pb.GetGameStateRequest) (*pb.GetGameStateResponse, error) {
+	response := &pb.GetGameStateResponse{}
+
+	response.Game = s.games[req.GameId].ToProto()
+
+	return response, nil
+}

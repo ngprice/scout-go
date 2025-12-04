@@ -5,8 +5,9 @@ package scout;
 option go_package = "scout-ai/proto;proto";
 
 service ScoutService {
-  rpc CreateGame (CreateGameRequest) returns (CreateGameResponse);
-  rpc Step       (StepRequest)       returns (StepResponse);
+  rpc CreateGame   (CreateGameRequest) returns (CreateGameResponse);
+  rpc Step         (StepRequest)       returns (StepResponse);
+  rpc GetGameState (GetGameStateRequest) returns (GetGameStateResponse);
 }
 
 message CreateGameRequest {
@@ -19,9 +20,37 @@ message CreateGameResponse {
 
 message StepRequest {
   string game_id = 1;
-  int32 action = 2;
+  
+  string action = 2;
 }
 
 message StepResponse {
   bool done = 1;
+  bool err = 2;
+}
+
+message GetGameStateRequest {
+  string game_id = 1;
+}
+
+message GetGameStateResponse {
+  Game game = 1;
+}
+
+message Game {
+  repeated Player players = 1;
+  repeated Card active_set = 2;
+}
+
+message Player {
+  string name         = 1;
+  int32 index         = 2;
+  int32 score         = 3;
+  bool scout_and_show = 4;
+  repeated Card hand  = 5;
+}
+
+message Card {
+  int32 value1 = 1;
+  int32 value2 = 2;
 }

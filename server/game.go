@@ -1,14 +1,15 @@
 package server
 
 type Game struct {
-	Players []*Player
+	Players   []*Player
+	ActiveSet []*Card
 }
 
 func NewGame(numPlayers int) *Game {
 	// init players
 	players := make([]*Player, numPlayers)
 	for i := 0; i < numPlayers; i++ {
-		players[i] = NewPlayer("Player" + string(i+1))
+		players[i] = NewPlayer("Player"+string(i+1), i)
 	}
 
 	// init deck
@@ -28,4 +29,20 @@ func NewGame(numPlayers int) *Game {
 	return &Game{
 		Players: players,
 	}
+}
+
+func (g *Game) ApplyAction(action string) RulesViolation {
+	err := g.validateAction(action)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Rules Validation
+type RulesViolation error
+
+func (g *Game) validateAction(action string) RulesViolation {
+	return nil
 }
