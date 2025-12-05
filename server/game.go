@@ -1,9 +1,13 @@
 package server
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 type Game struct {
 	Players         []*Player
+	ActivePlayer    *Player
 	ActiveSet       []*Card
 	ActiveSetPlayer *Player
 	Complete        bool
@@ -35,7 +39,6 @@ func NewGame(numPlayers int) *Game {
 	deck.Shuffle()
 
 	// deal cards to each player; players get same number of cards
-	// TODO: actually deal the cards sequentially?
 	for i := 0; i < numPlayers; i++ {
 		for j := 0; j < deckSize/numPlayers; j++ {
 			players[i].Hand = append(players[i].Hand, deck[i*numPlayers+j])
@@ -43,23 +46,35 @@ func NewGame(numPlayers int) *Game {
 	}
 
 	return &Game{
-		Players: players,
+		Players:      players,
+		ActivePlayer: players[0],
 	}
 }
 
 func (g *Game) PlayerAction(playerIndex int, action string, params string) RulesViolation {
-	player := g.Players[playerIndex]
+	if playerIndex != g.ActivePlayer.Index {
+		return RulesViolation(fmt.Errorf("not your turn"))
+	}
+
+	var err RulesViolation
 
 	switch action {
 	case "scout":
-		return g.scoutAction(player, params)
+		err = g.scoutAction(params)
 	case "show":
-		return g.showAction(player, params)
+		err = g.showAction(params)
 	case "scoutandshow":
 		// TODO: implement scoutandshow logic
 	default:
-		return nil
+		return RulesViolation(fmt.Errorf("unknown action"))
 	}
+
+	if err != nil {
+		return err
+	}
+
+	// set the next active player
+	g.ActivePlayer = g.Players[(g.ActivePlayer.Index+1)%len(g.Players)]
 
 	return nil
 }

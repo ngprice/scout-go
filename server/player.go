@@ -1,18 +1,28 @@
 package server
 
 type Player struct {
-	Name         string
-	Index        int
-	Score        int
-	Hand         []*Card
-	ScoutAndShow bool
+	Name              string
+	Index             int
+	Score             int
+	Hand              []*Card
+	FlipHandAvail     bool
+	ScoutAndShowAvail bool
 }
 
-func NewPlayer(name string, index int) *Player {
+func NewPlayer(name string, index int) (*Player, error) {
 	return &Player{
-		Name:  name,
-		Index: index,
-		Score: 0,
-		Hand:  make([]*Card, 0),
+		Name:              name,
+		Index:             index,
+		Score:             0,
+		Hand:              make([]*Card, 0),
+		FlipHandAvail:     true,
+		ScoutAndShowAvail: true,
+	}, nil
+}
+
+func (p *Player) FlipHand() {
+	for _, card := range p.Hand {
+		card.FlipValues()
 	}
+	p.FlipHandAvail = false
 }

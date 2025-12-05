@@ -304,7 +304,8 @@ func (x *GetGameStateResponse) GetGame() *Game {
 type Game struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Players       []*Player              `protobuf:"bytes,1,rep,name=players,proto3" json:"players,omitempty"`
-	ActiveSet     []*Card                `protobuf:"bytes,2,rep,name=active_set,json=activeSet,proto3" json:"active_set,omitempty"`
+	ActivePlayer  *Player                `protobuf:"bytes,2,opt,name=active_player,json=activePlayer,proto3" json:"active_player,omitempty"`
+	ActiveSet     []*Card                `protobuf:"bytes,3,rep,name=active_set,json=activeSet,proto3" json:"active_set,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -346,6 +347,13 @@ func (x *Game) GetPlayers() []*Player {
 	return nil
 }
 
+func (x *Game) GetActivePlayer() *Player {
+	if x != nil {
+		return x.ActivePlayer
+	}
+	return nil
+}
+
 func (x *Game) GetActiveSet() []*Card {
 	if x != nil {
 		return x.ActiveSet
@@ -354,14 +362,15 @@ func (x *Game) GetActiveSet() []*Card {
 }
 
 type Player struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Index         int32                  `protobuf:"varint,2,opt,name=index,proto3" json:"index,omitempty"`
-	Score         int32                  `protobuf:"varint,3,opt,name=score,proto3" json:"score,omitempty"`
-	ScoutAndShow  bool                   `protobuf:"varint,4,opt,name=scout_and_show,json=scoutAndShow,proto3" json:"scout_and_show,omitempty"`
-	Hand          []*Card                `protobuf:"bytes,5,rep,name=hand,proto3" json:"hand,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Name              string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Index             int32                  `protobuf:"varint,2,opt,name=index,proto3" json:"index,omitempty"`
+	Score             int32                  `protobuf:"varint,3,opt,name=score,proto3" json:"score,omitempty"`
+	FlipHandAvail     bool                   `protobuf:"varint,4,opt,name=flip_hand_avail,json=flipHandAvail,proto3" json:"flip_hand_avail,omitempty"`
+	ScoutAndShowAvail bool                   `protobuf:"varint,5,opt,name=scout_and_show_avail,json=scoutAndShowAvail,proto3" json:"scout_and_show_avail,omitempty"`
+	Hand              []*Card                `protobuf:"bytes,6,rep,name=hand,proto3" json:"hand,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *Player) Reset() {
@@ -415,9 +424,16 @@ func (x *Player) GetScore() int32 {
 	return 0
 }
 
-func (x *Player) GetScoutAndShow() bool {
+func (x *Player) GetFlipHandAvail() bool {
 	if x != nil {
-		return x.ScoutAndShow
+		return x.FlipHandAvail
+	}
+	return false
+}
+
+func (x *Player) GetScoutAndShowAvail() bool {
+	if x != nil {
+		return x.ScoutAndShowAvail
 	}
 	return false
 }
@@ -500,17 +516,19 @@ const file_proto_scout_proto_rawDesc = "" +
 	"\x13GetGameStateRequest\x12\x17\n" +
 	"\agame_id\x18\x01 \x01(\tR\x06gameId\"7\n" +
 	"\x14GetGameStateResponse\x12\x1f\n" +
-	"\x04game\x18\x01 \x01(\v2\v.scout.GameR\x04game\"[\n" +
+	"\x04game\x18\x01 \x01(\v2\v.scout.GameR\x04game\"\x8f\x01\n" +
 	"\x04Game\x12'\n" +
-	"\aplayers\x18\x01 \x03(\v2\r.scout.PlayerR\aplayers\x12*\n" +
+	"\aplayers\x18\x01 \x03(\v2\r.scout.PlayerR\aplayers\x122\n" +
+	"\ractive_player\x18\x02 \x01(\v2\r.scout.PlayerR\factivePlayer\x12*\n" +
 	"\n" +
-	"active_set\x18\x02 \x03(\v2\v.scout.CardR\tactiveSet\"\x8f\x01\n" +
+	"active_set\x18\x03 \x03(\v2\v.scout.CardR\tactiveSet\"\xc2\x01\n" +
 	"\x06Player\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05index\x18\x02 \x01(\x05R\x05index\x12\x14\n" +
-	"\x05score\x18\x03 \x01(\x05R\x05score\x12$\n" +
-	"\x0escout_and_show\x18\x04 \x01(\bR\fscoutAndShow\x12\x1f\n" +
-	"\x04hand\x18\x05 \x03(\v2\v.scout.CardR\x04hand\"6\n" +
+	"\x05score\x18\x03 \x01(\x05R\x05score\x12&\n" +
+	"\x0fflip_hand_avail\x18\x04 \x01(\bR\rflipHandAvail\x12/\n" +
+	"\x14scout_and_show_avail\x18\x05 \x01(\bR\x11scoutAndShowAvail\x12\x1f\n" +
+	"\x04hand\x18\x06 \x03(\v2\v.scout.CardR\x04hand\"6\n" +
 	"\x04Card\x12\x16\n" +
 	"\x06value1\x18\x01 \x01(\x05R\x06value1\x12\x16\n" +
 	"\x06value2\x18\x02 \x01(\x05R\x06value22\xcb\x01\n" +
@@ -547,19 +565,20 @@ var file_proto_scout_proto_goTypes = []any{
 var file_proto_scout_proto_depIdxs = []int32{
 	6, // 0: scout.GetGameStateResponse.game:type_name -> scout.Game
 	7, // 1: scout.Game.players:type_name -> scout.Player
-	8, // 2: scout.Game.active_set:type_name -> scout.Card
-	8, // 3: scout.Player.hand:type_name -> scout.Card
-	0, // 4: scout.ScoutService.CreateGame:input_type -> scout.CreateGameRequest
-	2, // 5: scout.ScoutService.Step:input_type -> scout.StepRequest
-	4, // 6: scout.ScoutService.GetGameState:input_type -> scout.GetGameStateRequest
-	1, // 7: scout.ScoutService.CreateGame:output_type -> scout.CreateGameResponse
-	3, // 8: scout.ScoutService.Step:output_type -> scout.StepResponse
-	5, // 9: scout.ScoutService.GetGameState:output_type -> scout.GetGameStateResponse
-	7, // [7:10] is the sub-list for method output_type
-	4, // [4:7] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	7, // 2: scout.Game.active_player:type_name -> scout.Player
+	8, // 3: scout.Game.active_set:type_name -> scout.Card
+	8, // 4: scout.Player.hand:type_name -> scout.Card
+	0, // 5: scout.ScoutService.CreateGame:input_type -> scout.CreateGameRequest
+	2, // 6: scout.ScoutService.Step:input_type -> scout.StepRequest
+	4, // 7: scout.ScoutService.GetGameState:input_type -> scout.GetGameStateRequest
+	1, // 8: scout.ScoutService.CreateGame:output_type -> scout.CreateGameResponse
+	3, // 9: scout.ScoutService.Step:output_type -> scout.StepResponse
+	5, // 10: scout.ScoutService.GetGameState:output_type -> scout.GetGameStateResponse
+	8, // [8:11] is the sub-list for method output_type
+	5, // [5:8] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_proto_scout_proto_init() }

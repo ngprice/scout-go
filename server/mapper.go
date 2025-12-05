@@ -1,6 +1,8 @@
 package server
 
 import (
+	"encoding/json"
+	"log"
 	pb "scout-ai/proto"
 )
 
@@ -15,7 +17,18 @@ func (g *Game) ToProto() *pb.Game {
 		protoGame.ActiveSet = append(protoGame.ActiveSet, card.ToProto())
 	}
 
+	protoGame.ActivePlayer = g.ActivePlayer.ToProto()
+
 	return protoGame
+}
+
+func (g *Game) ToJSON() string {
+	jg, err := json.MarshalIndent(g, "", "  ")
+	if err != nil {
+		log.Printf("Error marshalling game to JSON: %v", err)
+		return ""
+	}
+	return string(jg)
 }
 
 func (p *Player) ToProto() *pb.Player {
@@ -25,11 +38,12 @@ func (p *Player) ToProto() *pb.Player {
 	}
 
 	return &pb.Player{
-		Name:         p.Name,
-		Index:        int32(p.Index),
-		Score:        int32(p.Score),
-		ScoutAndShow: p.ScoutAndShow,
-		Hand:         hand,
+		Name:              p.Name,
+		Index:             int32(p.Index),
+		Score:             int32(p.Score),
+		FlipHandAvail:     p.FlipHandAvail,
+		ScoutAndShowAvail: p.ScoutAndShowAvail,
+		Hand:              hand,
 	}
 }
 

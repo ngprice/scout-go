@@ -38,16 +38,19 @@ message GetGameStateResponse {
 }
 
 message Game {
-  repeated Player players = 1;
-  repeated Card active_set = 2;
+  repeated Player players  = 1;
+  Player active_player     = 2;
+  repeated Card active_set = 3;
+
 }
 
 message Player {
-  string name         = 1;
-  int32 index         = 2;
-  int32 score         = 3;
-  bool scout_and_show = 4;
-  repeated Card hand  = 5;
+  string name               = 1;
+  int32 index               = 2;
+  int32 score               = 3;
+  bool flip_hand_avail      = 4;
+  bool scout_and_show_avail = 5;
+  repeated Card hand        = 6;
 }
 
 message Card {

@@ -20,3 +20,13 @@ func NewCard(value1, value2 int) (*Card, error) {
 func (c *Card) FlipValues() {
 	c.Value1, c.Value2 = c.Value2, c.Value1
 }
+
+type Deck []*Card
+
+func NewDeck(cards []*Card) Deck {
+	return Deck(cards)
+}
+
+func (d *Deck) Shuffle() {
+	// TODO: randomize the order of cards in the deck
+}
