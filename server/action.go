@@ -26,7 +26,7 @@ func (g *Game) showAction(params string) RulesViolation {
 	}
 
 	// check set beats active set
-	if setComparison(set, g.ActiveSet) > 0 {
+	if setComparison(set, g.ActiveSet) {
 		// remove set from player's hand
 		newHand := make([]*Card, 0)
 		for i, card := range p.Hand {
@@ -49,26 +49,32 @@ func (g *Game) showAction(params string) RulesViolation {
 	return RulesViolation(fmt.Errorf("set does not beat active set"))
 }
 
-// returns 1 if set beats activeSet, -1 otherwise
-func setComparison(set, activeSet []*Card) int {
-	// always beat the empty active set
-	if len(activeSet) == 0 {
-		return 1
+// returns true if set beats compSet, false otherwise
+func setComparison(set, compSet []*Card) bool {
+	// always beat the empty set
+	if len(compSet) == 0 {
+		return true
 	}
 
 	// always beat a smaller set
-	if len(set) > len(activeSet) {
-		return 1
-	} else if len(set) < len(activeSet) {
-		return -1
+	if len(set) > len(compSet) {
+		return true
+	} else if len(set) < len(compSet) {
+		return false
 	}
 
 	// matching beats consecutive
 	isSetConsecutive := func(s []*Card) bool {
 		return s[0].Value1 != s[1].Value1
 	}
-	if !isSetConsecutive(set) && isSetConsecutive(activeSet) {
-		return 1
+	if !isSetConsecutive(set) {
+		if isSetConsecutive(compSet) {
+			return true
+		}
+	} else {
+		if !isSetConsecutive(compSet) {
+			return false
+		}
 	}
 
 	// lowest number is tie breaker
@@ -81,10 +87,8 @@ func setComparison(set, activeSet []*Card) int {
 		}
 		return min
 	}
-	if minValue(set) > minValue(activeSet) {
-		return 1
-	}
-	return -1
+
+	return minValue(set) > minValue(compSet)
 }
 
 // scoutAction lets the active player take a card from the active set and place it in their hand.
@@ -125,16 +129,16 @@ func (g *Game) scoutAction(params string) RulesViolation {
 func parseParams(params string) (int, int) {
 	parts := strings.Split(params, ",")
 	if len(parts) < 2 {
-		return -1, 0
+		return 1, 0
 	}
 
 	firstIndex, err := strconv.Atoi(strings.TrimSpace(parts[0]))
 	if err != nil {
-		return -1, 0
+		return 1, 0
 	}
 	length, err := strconv.Atoi(strings.TrimSpace(parts[1]))
 	if err != nil {
-		return -1, 0
+		return 1, 0
 	}
 
 	return firstIndex, length
