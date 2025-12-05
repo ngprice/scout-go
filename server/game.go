@@ -6,11 +6,12 @@ import (
 )
 
 type Game struct {
-	Players         []*Player
-	ActivePlayer    *Player
-	ActiveSet       []*Card
-	ActiveSetPlayer *Player
-	Complete        bool
+	Players           []*Player
+	ActivePlayer      *Player
+	ActiveSet         []*Card
+	ActiveSetPlayer   *Player
+	ConsecutiveScouts int
+	Complete          bool
 }
 
 func NewGame(numPlayers int) *Game {
@@ -52,6 +53,10 @@ func NewGame(numPlayers int) *Game {
 }
 
 func (g *Game) PlayerAction(playerIndex int, action string, params string) RulesViolation {
+	if g.Complete {
+		return RulesViolation(fmt.Errorf("game is complete"))
+	}
+
 	if playerIndex != g.ActivePlayer.Index {
 		return RulesViolation(fmt.Errorf("not your turn"))
 	}
@@ -73,8 +78,22 @@ func (g *Game) PlayerAction(playerIndex int, action string, params string) Rules
 		return err
 	}
 
+	// check for game completion
+	if g.checkCompletion(); g.Complete {
+		return nil // exit game loop
+	}
+
 	// set the next active player
 	g.ActivePlayer = g.Players[(g.ActivePlayer.Index+1)%len(g.Players)]
 
 	return nil
+}
+
+func (g *Game) checkCompletion() {
+	if g.ConsecutiveScouts == len(g.Players)-1 {
+		g.Complete = true
+	}
+	if len(g.ActivePlayer.Hand) == 0 {
+		g.Complete = true
+	}
 }

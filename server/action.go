@@ -120,7 +120,8 @@ func (g *Game) scoutAction(params string) RulesViolation {
 		g.ActiveSetPlayer.Score += 1
 	}
 
-	// TODO: check for game end here, too
+	// advance the ConsecutiveScouts counter
+	g.ConsecutiveScouts += 1
 
 	return nil
 }
