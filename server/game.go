@@ -3,9 +3,12 @@ package server
 import (
 	"fmt"
 	"strconv"
+
+	"github.com/google/uuid"
 )
 
 type Game struct {
+	Id                string
 	Players           []*Player
 	ActivePlayer      *Player
 	ActiveSet         []*Card
@@ -34,6 +37,7 @@ func NewGame(numPlayers int) (*Game, RulesViolation) {
 	}
 
 	return &Game{
+		Id:           uuid.New().String(),
 		Players:      players,
 		ActivePlayer: players[0],
 	}, nil

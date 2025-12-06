@@ -7,17 +7,18 @@ import (
 )
 
 func (g *Game) ToProto() *pb.Game {
-	protoGame := &pb.Game{}
-
-	for _, player := range g.Players {
-		protoGame.Players = append(protoGame.Players, player.ToProto())
+	protoGame := &pb.Game{
+		Id:                   g.Id,
+		ActivePlayerIndex:    int32(g.ActivePlayer.Index),
+		ActiveSetPlayerIndex: int32(g.ActiveSetPlayer.Index),
+		ConsecutiveScouts:    int32(g.ConsecutiveScouts),
+		Round:                int32(g.Round),
+		Complete:             g.Complete,
 	}
 
 	for _, card := range g.ActiveSet {
 		protoGame.ActiveSet = append(protoGame.ActiveSet, card.ToProto())
 	}
-
-	protoGame.ActivePlayer = g.ActivePlayer.ToProto()
 
 	return protoGame
 }
@@ -38,12 +39,12 @@ func (p *Player) ToProto() *pb.Player {
 	}
 
 	return &pb.Player{
-		Name:              p.Name,
-		Index:             int32(p.Index),
-		Score:             int32(p.Score),
-		FlipHandAvail:     p.CanReverseHand,
-		ScoutAndShowAvail: p.CanScoutAndShow,
-		Hand:              hand,
+		Name:            p.Name,
+		Index:           int32(p.Index),
+		Score:           int32(p.Score),
+		Hand:            hand,
+		CanReverseHand:  p.CanReverseHand,
+		CanScoutAndShow: p.CanScoutAndShow,
 	}
 }
 

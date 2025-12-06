@@ -109,28 +109,30 @@ func (x *CreateGameResponse) GetGameId() string {
 	return ""
 }
 
-type StepRequest struct {
+type PlayerActionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	GameId        string                 `protobuf:"bytes,1,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
-	Action        string                 `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"`
+	PlayerIndex   int32                  `protobuf:"varint,2,opt,name=player_index,json=playerIndex,proto3" json:"player_index,omitempty"`
+	Action        string                 `protobuf:"bytes,3,opt,name=action,proto3" json:"action,omitempty"`
+	Params        string                 `protobuf:"bytes,4,opt,name=params,proto3" json:"params,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *StepRequest) Reset() {
-	*x = StepRequest{}
+func (x *PlayerActionRequest) Reset() {
+	*x = PlayerActionRequest{}
 	mi := &file_proto_scout_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *StepRequest) String() string {
+func (x *PlayerActionRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*StepRequest) ProtoMessage() {}
+func (*PlayerActionRequest) ProtoMessage() {}
 
-func (x *StepRequest) ProtoReflect() protoreflect.Message {
+func (x *PlayerActionRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_scout_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -142,47 +144,61 @@ func (x *StepRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StepRequest.ProtoReflect.Descriptor instead.
-func (*StepRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use PlayerActionRequest.ProtoReflect.Descriptor instead.
+func (*PlayerActionRequest) Descriptor() ([]byte, []int) {
 	return file_proto_scout_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *StepRequest) GetGameId() string {
+func (x *PlayerActionRequest) GetGameId() string {
 	if x != nil {
 		return x.GameId
 	}
 	return ""
 }
 
-func (x *StepRequest) GetAction() string {
+func (x *PlayerActionRequest) GetPlayerIndex() int32 {
+	if x != nil {
+		return x.PlayerIndex
+	}
+	return 0
+}
+
+func (x *PlayerActionRequest) GetAction() string {
 	if x != nil {
 		return x.Action
 	}
 	return ""
 }
 
-type StepResponse struct {
+func (x *PlayerActionRequest) GetParams() string {
+	if x != nil {
+		return x.Params
+	}
+	return ""
+}
+
+type PlayerActionResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Done          bool                   `protobuf:"varint,1,opt,name=done,proto3" json:"done,omitempty"`
-	Err           bool                   `protobuf:"varint,2,opt,name=err,proto3" json:"err,omitempty"`
+	Err           bool                   `protobuf:"varint,1,opt,name=err,proto3" json:"err,omitempty"`
+	ErrMsg        string                 `protobuf:"bytes,2,opt,name=errMsg,proto3" json:"errMsg,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *StepResponse) Reset() {
-	*x = StepResponse{}
+func (x *PlayerActionResponse) Reset() {
+	*x = PlayerActionResponse{}
 	mi := &file_proto_scout_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *StepResponse) String() string {
+func (x *PlayerActionResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*StepResponse) ProtoMessage() {}
+func (*PlayerActionResponse) ProtoMessage() {}
 
-func (x *StepResponse) ProtoReflect() protoreflect.Message {
+func (x *PlayerActionResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_scout_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -194,23 +210,23 @@ func (x *StepResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StepResponse.ProtoReflect.Descriptor instead.
-func (*StepResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use PlayerActionResponse.ProtoReflect.Descriptor instead.
+func (*PlayerActionResponse) Descriptor() ([]byte, []int) {
 	return file_proto_scout_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *StepResponse) GetDone() bool {
-	if x != nil {
-		return x.Done
-	}
-	return false
-}
-
-func (x *StepResponse) GetErr() bool {
+func (x *PlayerActionResponse) GetErr() bool {
 	if x != nil {
 		return x.Err
 	}
 	return false
+}
+
+func (x *PlayerActionResponse) GetErrMsg() string {
+	if x != nil {
+		return x.ErrMsg
+	}
+	return ""
 }
 
 type GetGameStateRequest struct {
@@ -301,18 +317,118 @@ func (x *GetGameStateResponse) GetGame() *Game {
 	return nil
 }
 
-type Game struct {
+type GetPlayerStateRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Players       []*Player              `protobuf:"bytes,1,rep,name=players,proto3" json:"players,omitempty"`
-	ActivePlayer  *Player                `protobuf:"bytes,2,opt,name=active_player,json=activePlayer,proto3" json:"active_player,omitempty"`
-	ActiveSet     []*Card                `protobuf:"bytes,3,rep,name=active_set,json=activeSet,proto3" json:"active_set,omitempty"`
+	GameId        string                 `protobuf:"bytes,1,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
+	PlayerIndex   int32                  `protobuf:"varint,2,opt,name=player_index,json=playerIndex,proto3" json:"player_index,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
+func (x *GetPlayerStateRequest) Reset() {
+	*x = GetPlayerStateRequest{}
+	mi := &file_proto_scout_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPlayerStateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPlayerStateRequest) ProtoMessage() {}
+
+func (x *GetPlayerStateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_scout_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPlayerStateRequest.ProtoReflect.Descriptor instead.
+func (*GetPlayerStateRequest) Descriptor() ([]byte, []int) {
+	return file_proto_scout_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *GetPlayerStateRequest) GetGameId() string {
+	if x != nil {
+		return x.GameId
+	}
+	return ""
+}
+
+func (x *GetPlayerStateRequest) GetPlayerIndex() int32 {
+	if x != nil {
+		return x.PlayerIndex
+	}
+	return 0
+}
+
+type GetPlayerStateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Player        *Player                `protobuf:"bytes,1,opt,name=player,proto3" json:"player,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPlayerStateResponse) Reset() {
+	*x = GetPlayerStateResponse{}
+	mi := &file_proto_scout_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPlayerStateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPlayerStateResponse) ProtoMessage() {}
+
+func (x *GetPlayerStateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_scout_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPlayerStateResponse.ProtoReflect.Descriptor instead.
+func (*GetPlayerStateResponse) Descriptor() ([]byte, []int) {
+	return file_proto_scout_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *GetPlayerStateResponse) GetPlayer() *Player {
+	if x != nil {
+		return x.Player
+	}
+	return nil
+}
+
+type Game struct {
+	state                protoimpl.MessageState `protogen:"open.v1"`
+	Id                   string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	ActivePlayerIndex    int32                  `protobuf:"varint,2,opt,name=active_player_index,json=activePlayerIndex,proto3" json:"active_player_index,omitempty"`
+	ActiveSet            []*Card                `protobuf:"bytes,3,rep,name=active_set,json=activeSet,proto3" json:"active_set,omitempty"`
+	ActiveSetPlayerIndex int32                  `protobuf:"varint,4,opt,name=active_set_player_index,json=activeSetPlayerIndex,proto3" json:"active_set_player_index,omitempty"`
+	ConsecutiveScouts    int32                  `protobuf:"varint,5,opt,name=consecutive_scouts,json=consecutiveScouts,proto3" json:"consecutive_scouts,omitempty"`
+	Round                int32                  `protobuf:"varint,6,opt,name=round,proto3" json:"round,omitempty"`
+	Complete             bool                   `protobuf:"varint,7,opt,name=complete,proto3" json:"complete,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
 func (x *Game) Reset() {
 	*x = Game{}
-	mi := &file_proto_scout_proto_msgTypes[6]
+	mi := &file_proto_scout_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -324,7 +440,7 @@ func (x *Game) String() string {
 func (*Game) ProtoMessage() {}
 
 func (x *Game) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scout_proto_msgTypes[6]
+	mi := &file_proto_scout_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -337,21 +453,21 @@ func (x *Game) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Game.ProtoReflect.Descriptor instead.
 func (*Game) Descriptor() ([]byte, []int) {
-	return file_proto_scout_proto_rawDescGZIP(), []int{6}
+	return file_proto_scout_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *Game) GetPlayers() []*Player {
+func (x *Game) GetId() string {
 	if x != nil {
-		return x.Players
+		return x.Id
 	}
-	return nil
+	return ""
 }
 
-func (x *Game) GetActivePlayer() *Player {
+func (x *Game) GetActivePlayerIndex() int32 {
 	if x != nil {
-		return x.ActivePlayer
+		return x.ActivePlayerIndex
 	}
-	return nil
+	return 0
 }
 
 func (x *Game) GetActiveSet() []*Card {
@@ -361,21 +477,49 @@ func (x *Game) GetActiveSet() []*Card {
 	return nil
 }
 
+func (x *Game) GetActiveSetPlayerIndex() int32 {
+	if x != nil {
+		return x.ActiveSetPlayerIndex
+	}
+	return 0
+}
+
+func (x *Game) GetConsecutiveScouts() int32 {
+	if x != nil {
+		return x.ConsecutiveScouts
+	}
+	return 0
+}
+
+func (x *Game) GetRound() int32 {
+	if x != nil {
+		return x.Round
+	}
+	return 0
+}
+
+func (x *Game) GetComplete() bool {
+	if x != nil {
+		return x.Complete
+	}
+	return false
+}
+
 type Player struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
-	Name              string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Index             int32                  `protobuf:"varint,2,opt,name=index,proto3" json:"index,omitempty"`
-	Score             int32                  `protobuf:"varint,3,opt,name=score,proto3" json:"score,omitempty"`
-	FlipHandAvail     bool                   `protobuf:"varint,4,opt,name=flip_hand_avail,json=flipHandAvail,proto3" json:"flip_hand_avail,omitempty"`
-	ScoutAndShowAvail bool                   `protobuf:"varint,5,opt,name=scout_and_show_avail,json=scoutAndShowAvail,proto3" json:"scout_and_show_avail,omitempty"`
-	Hand              []*Card                `protobuf:"bytes,6,rep,name=hand,proto3" json:"hand,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Name            string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Index           int32                  `protobuf:"varint,2,opt,name=index,proto3" json:"index,omitempty"`
+	Score           int32                  `protobuf:"varint,3,opt,name=score,proto3" json:"score,omitempty"`
+	Hand            []*Card                `protobuf:"bytes,4,rep,name=hand,proto3" json:"hand,omitempty"`
+	CanReverseHand  bool                   `protobuf:"varint,5,opt,name=can_reverse_hand,json=canReverseHand,proto3" json:"can_reverse_hand,omitempty"`
+	CanScoutAndShow bool                   `protobuf:"varint,6,opt,name=can_scout_and_show,json=canScoutAndShow,proto3" json:"can_scout_and_show,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *Player) Reset() {
 	*x = Player{}
-	mi := &file_proto_scout_proto_msgTypes[7]
+	mi := &file_proto_scout_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -387,7 +531,7 @@ func (x *Player) String() string {
 func (*Player) ProtoMessage() {}
 
 func (x *Player) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scout_proto_msgTypes[7]
+	mi := &file_proto_scout_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -400,7 +544,7 @@ func (x *Player) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Player.ProtoReflect.Descriptor instead.
 func (*Player) Descriptor() ([]byte, []int) {
-	return file_proto_scout_proto_rawDescGZIP(), []int{7}
+	return file_proto_scout_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *Player) GetName() string {
@@ -424,25 +568,25 @@ func (x *Player) GetScore() int32 {
 	return 0
 }
 
-func (x *Player) GetFlipHandAvail() bool {
-	if x != nil {
-		return x.FlipHandAvail
-	}
-	return false
-}
-
-func (x *Player) GetScoutAndShowAvail() bool {
-	if x != nil {
-		return x.ScoutAndShowAvail
-	}
-	return false
-}
-
 func (x *Player) GetHand() []*Card {
 	if x != nil {
 		return x.Hand
 	}
 	return nil
+}
+
+func (x *Player) GetCanReverseHand() bool {
+	if x != nil {
+		return x.CanReverseHand
+	}
+	return false
+}
+
+func (x *Player) GetCanScoutAndShow() bool {
+	if x != nil {
+		return x.CanScoutAndShow
+	}
+	return false
 }
 
 type Card struct {
@@ -455,7 +599,7 @@ type Card struct {
 
 func (x *Card) Reset() {
 	*x = Card{}
-	mi := &file_proto_scout_proto_msgTypes[8]
+	mi := &file_proto_scout_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -467,7 +611,7 @@ func (x *Card) String() string {
 func (*Card) ProtoMessage() {}
 
 func (x *Card) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scout_proto_msgTypes[8]
+	mi := &file_proto_scout_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -480,7 +624,7 @@ func (x *Card) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Card.ProtoReflect.Descriptor instead.
 func (*Card) Descriptor() ([]byte, []int) {
-	return file_proto_scout_proto_rawDescGZIP(), []int{8}
+	return file_proto_scout_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *Card) GetValue1() int32 {
@@ -506,37 +650,49 @@ const file_proto_scout_proto_rawDesc = "" +
 	"\vnum_players\x18\x01 \x01(\x05R\n" +
 	"numPlayers\"-\n" +
 	"\x12CreateGameResponse\x12\x17\n" +
-	"\agame_id\x18\x01 \x01(\tR\x06gameId\">\n" +
-	"\vStepRequest\x12\x17\n" +
-	"\agame_id\x18\x01 \x01(\tR\x06gameId\x12\x16\n" +
-	"\x06action\x18\x02 \x01(\tR\x06action\"4\n" +
-	"\fStepResponse\x12\x12\n" +
-	"\x04done\x18\x01 \x01(\bR\x04done\x12\x10\n" +
-	"\x03err\x18\x02 \x01(\bR\x03err\".\n" +
+	"\agame_id\x18\x01 \x01(\tR\x06gameId\"\x81\x01\n" +
+	"\x13PlayerActionRequest\x12\x17\n" +
+	"\agame_id\x18\x01 \x01(\tR\x06gameId\x12!\n" +
+	"\fplayer_index\x18\x02 \x01(\x05R\vplayerIndex\x12\x16\n" +
+	"\x06action\x18\x03 \x01(\tR\x06action\x12\x16\n" +
+	"\x06params\x18\x04 \x01(\tR\x06params\"@\n" +
+	"\x14PlayerActionResponse\x12\x10\n" +
+	"\x03err\x18\x01 \x01(\bR\x03err\x12\x16\n" +
+	"\x06errMsg\x18\x02 \x01(\tR\x06errMsg\".\n" +
 	"\x13GetGameStateRequest\x12\x17\n" +
 	"\agame_id\x18\x01 \x01(\tR\x06gameId\"7\n" +
 	"\x14GetGameStateResponse\x12\x1f\n" +
-	"\x04game\x18\x01 \x01(\v2\v.scout.GameR\x04game\"\x8f\x01\n" +
-	"\x04Game\x12'\n" +
-	"\aplayers\x18\x01 \x03(\v2\r.scout.PlayerR\aplayers\x122\n" +
-	"\ractive_player\x18\x02 \x01(\v2\r.scout.PlayerR\factivePlayer\x12*\n" +
+	"\x04game\x18\x01 \x01(\v2\v.scout.GameR\x04game\"S\n" +
+	"\x15GetPlayerStateRequest\x12\x17\n" +
+	"\agame_id\x18\x01 \x01(\tR\x06gameId\x12!\n" +
+	"\fplayer_index\x18\x02 \x01(\x05R\vplayerIndex\"?\n" +
+	"\x16GetPlayerStateResponse\x12%\n" +
+	"\x06player\x18\x01 \x01(\v2\r.scout.PlayerR\x06player\"\x8a\x02\n" +
+	"\x04Game\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12.\n" +
+	"\x13active_player_index\x18\x02 \x01(\x05R\x11activePlayerIndex\x12*\n" +
 	"\n" +
-	"active_set\x18\x03 \x03(\v2\v.scout.CardR\tactiveSet\"\xc2\x01\n" +
+	"active_set\x18\x03 \x03(\v2\v.scout.CardR\tactiveSet\x125\n" +
+	"\x17active_set_player_index\x18\x04 \x01(\x05R\x14activeSetPlayerIndex\x12-\n" +
+	"\x12consecutive_scouts\x18\x05 \x01(\x05R\x11consecutiveScouts\x12\x14\n" +
+	"\x05round\x18\x06 \x01(\x05R\x05round\x12\x1a\n" +
+	"\bcomplete\x18\a \x01(\bR\bcomplete\"\xc0\x01\n" +
 	"\x06Player\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05index\x18\x02 \x01(\x05R\x05index\x12\x14\n" +
-	"\x05score\x18\x03 \x01(\x05R\x05score\x12&\n" +
-	"\x0fflip_hand_avail\x18\x04 \x01(\bR\rflipHandAvail\x12/\n" +
-	"\x14scout_and_show_avail\x18\x05 \x01(\bR\x11scoutAndShowAvail\x12\x1f\n" +
-	"\x04hand\x18\x06 \x03(\v2\v.scout.CardR\x04hand\"6\n" +
+	"\x05score\x18\x03 \x01(\x05R\x05score\x12\x1f\n" +
+	"\x04hand\x18\x04 \x03(\v2\v.scout.CardR\x04hand\x12(\n" +
+	"\x10can_reverse_hand\x18\x05 \x01(\bR\x0ecanReverseHand\x12+\n" +
+	"\x12can_scout_and_show\x18\x06 \x01(\bR\x0fcanScoutAndShow\"6\n" +
 	"\x04Card\x12\x16\n" +
 	"\x06value1\x18\x01 \x01(\x05R\x06value1\x12\x16\n" +
-	"\x06value2\x18\x02 \x01(\x05R\x06value22\xcb\x01\n" +
+	"\x06value2\x18\x02 \x01(\x05R\x06value22\xb2\x02\n" +
 	"\fScoutService\x12A\n" +
 	"\n" +
-	"CreateGame\x12\x18.scout.CreateGameRequest\x1a\x19.scout.CreateGameResponse\x12/\n" +
-	"\x04Step\x12\x12.scout.StepRequest\x1a\x13.scout.StepResponse\x12G\n" +
-	"\fGetGameState\x12\x1a.scout.GetGameStateRequest\x1a\x1b.scout.GetGameStateResponseB\x16Z\x14scout-ai/proto;protob\x06proto3"
+	"CreateGame\x12\x18.scout.CreateGameRequest\x1a\x19.scout.CreateGameResponse\x12G\n" +
+	"\fPlayerAction\x12\x1a.scout.PlayerActionRequest\x1a\x1b.scout.PlayerActionResponse\x12G\n" +
+	"\fGetGameState\x12\x1a.scout.GetGameStateRequest\x1a\x1b.scout.GetGameStateResponse\x12M\n" +
+	"\x0eGetPlayerState\x12\x1c.scout.GetPlayerStateRequest\x1a\x1d.scout.GetPlayerStateResponseB\x16Z\x14scout-go/proto;protob\x06proto3"
 
 var (
 	file_proto_scout_proto_rawDescOnce sync.Once
@@ -550,35 +706,38 @@ func file_proto_scout_proto_rawDescGZIP() []byte {
 	return file_proto_scout_proto_rawDescData
 }
 
-var file_proto_scout_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_proto_scout_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_proto_scout_proto_goTypes = []any{
-	(*CreateGameRequest)(nil),    // 0: scout.CreateGameRequest
-	(*CreateGameResponse)(nil),   // 1: scout.CreateGameResponse
-	(*StepRequest)(nil),          // 2: scout.StepRequest
-	(*StepResponse)(nil),         // 3: scout.StepResponse
-	(*GetGameStateRequest)(nil),  // 4: scout.GetGameStateRequest
-	(*GetGameStateResponse)(nil), // 5: scout.GetGameStateResponse
-	(*Game)(nil),                 // 6: scout.Game
-	(*Player)(nil),               // 7: scout.Player
-	(*Card)(nil),                 // 8: scout.Card
+	(*CreateGameRequest)(nil),      // 0: scout.CreateGameRequest
+	(*CreateGameResponse)(nil),     // 1: scout.CreateGameResponse
+	(*PlayerActionRequest)(nil),    // 2: scout.PlayerActionRequest
+	(*PlayerActionResponse)(nil),   // 3: scout.PlayerActionResponse
+	(*GetGameStateRequest)(nil),    // 4: scout.GetGameStateRequest
+	(*GetGameStateResponse)(nil),   // 5: scout.GetGameStateResponse
+	(*GetPlayerStateRequest)(nil),  // 6: scout.GetPlayerStateRequest
+	(*GetPlayerStateResponse)(nil), // 7: scout.GetPlayerStateResponse
+	(*Game)(nil),                   // 8: scout.Game
+	(*Player)(nil),                 // 9: scout.Player
+	(*Card)(nil),                   // 10: scout.Card
 }
 var file_proto_scout_proto_depIdxs = []int32{
-	6, // 0: scout.GetGameStateResponse.game:type_name -> scout.Game
-	7, // 1: scout.Game.players:type_name -> scout.Player
-	7, // 2: scout.Game.active_player:type_name -> scout.Player
-	8, // 3: scout.Game.active_set:type_name -> scout.Card
-	8, // 4: scout.Player.hand:type_name -> scout.Card
-	0, // 5: scout.ScoutService.CreateGame:input_type -> scout.CreateGameRequest
-	2, // 6: scout.ScoutService.Step:input_type -> scout.StepRequest
-	4, // 7: scout.ScoutService.GetGameState:input_type -> scout.GetGameStateRequest
-	1, // 8: scout.ScoutService.CreateGame:output_type -> scout.CreateGameResponse
-	3, // 9: scout.ScoutService.Step:output_type -> scout.StepResponse
-	5, // 10: scout.ScoutService.GetGameState:output_type -> scout.GetGameStateResponse
-	8, // [8:11] is the sub-list for method output_type
-	5, // [5:8] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	8,  // 0: scout.GetGameStateResponse.game:type_name -> scout.Game
+	9,  // 1: scout.GetPlayerStateResponse.player:type_name -> scout.Player
+	10, // 2: scout.Game.active_set:type_name -> scout.Card
+	10, // 3: scout.Player.hand:type_name -> scout.Card
+	0,  // 4: scout.ScoutService.CreateGame:input_type -> scout.CreateGameRequest
+	2,  // 5: scout.ScoutService.PlayerAction:input_type -> scout.PlayerActionRequest
+	4,  // 6: scout.ScoutService.GetGameState:input_type -> scout.GetGameStateRequest
+	6,  // 7: scout.ScoutService.GetPlayerState:input_type -> scout.GetPlayerStateRequest
+	1,  // 8: scout.ScoutService.CreateGame:output_type -> scout.CreateGameResponse
+	3,  // 9: scout.ScoutService.PlayerAction:output_type -> scout.PlayerActionResponse
+	5,  // 10: scout.ScoutService.GetGameState:output_type -> scout.GetGameStateResponse
+	7,  // 11: scout.ScoutService.GetPlayerState:output_type -> scout.GetPlayerStateResponse
+	8,  // [8:12] is the sub-list for method output_type
+	4,  // [4:8] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_proto_scout_proto_init() }
@@ -592,7 +751,7 @@ func file_proto_scout_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_scout_proto_rawDesc), len(file_proto_scout_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

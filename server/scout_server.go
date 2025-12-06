@@ -3,8 +3,6 @@ package server
 import (
 	"context"
 	pb "scout-go/proto"
-
-	"github.com/google/uuid"
 )
 
 type ScoutServer struct {
@@ -19,31 +17,38 @@ func NewScoutServer() *ScoutServer {
 }
 
 func (s *ScoutServer) CreateGame(ctx context.Context, req *pb.CreateGameRequest) (*pb.CreateGameResponse, error) {
-	id := uuid.New().String()
-
 	game, err := NewGame(int(req.NumPlayers))
 	if err != nil {
 		return nil, err
 	}
-	s.games[id] = game
+	s.games[game.Id] = game
 
 	return &pb.CreateGameResponse{
-		GameId: id,
+		GameId: game.Id,
 	}, nil
 }
 
-func (s *ScoutServer) Step(ctx context.Context, req *pb.StepRequest) (*pb.StepResponse, error) {
-	// done := game.ApplyAction(req.Action)
-
-	return &pb.StepResponse{
-		Done: false,
+func (s *ScoutServer) PlayerAction(ctx context.Context, req *pb.PlayerActionRequest) (*pb.PlayerActionResponse, error) {
+	game := s.games[req.GameId]
+	err := game.PlayerAction(int(req.PlayerIndex), req.Action, req.Params)
+	var msg string
+	if err != nil {
+		msg = err.Error()
+	}
+	return &pb.PlayerActionResponse{
+		Err:    err != nil,
+		ErrMsg: msg,
 	}, nil
 }
 
 func (s *ScoutServer) GetGameState(ctx context.Context, req *pb.GetGameStateRequest) (*pb.GetGameStateResponse, error) {
-	response := &pb.GetGameStateResponse{}
+	return &pb.GetGameStateResponse{
+		Game: s.games[req.GameId].ToProto(),
+	}, nil
+}
 
-	response.Game = s.games[req.GameId].ToProto()
-
-	return response, nil
+func (s *ScoutServer) GetPlayerState(ctx context.Context, req *pb.GetPlayerStateRequest) (*pb.GetPlayerStateResponse, error) {
+	return &pb.GetPlayerStateResponse{
+		Player: s.games[req.GameId].Players[req.PlayerIndex].ToProto(),
+	}, nil
 }

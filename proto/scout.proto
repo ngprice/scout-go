@@ -2,12 +2,13 @@ syntax = "proto3";
 
 package scout;
 
-option go_package = "scout-ai/proto;proto";
+option go_package = "scout-go/proto;proto";
 
 service ScoutService {
   rpc CreateGame   (CreateGameRequest) returns (CreateGameResponse);
-  rpc Step         (StepRequest)       returns (StepResponse);
+  rpc PlayerAction         (PlayerActionRequest)       returns (PlayerActionResponse);
   rpc GetGameState (GetGameStateRequest) returns (GetGameStateResponse);
+  rpc GetPlayerState (GetPlayerStateRequest) returns (GetPlayerStateResponse);
 }
 
 message CreateGameRequest {
@@ -18,15 +19,16 @@ message CreateGameResponse {
   string game_id = 1;
 }
 
-message StepRequest {
+message PlayerActionRequest {
   string game_id = 1;
-  
-  string action = 2;
+  int32 player_index = 2;
+  string action = 3;
+  string params = 4;
 }
 
-message StepResponse {
-  bool done = 1;
-  bool err = 2;
+message PlayerActionResponse {
+  bool err = 1;
+  string errMsg = 2;
 }
 
 message GetGameStateRequest {
@@ -37,20 +39,32 @@ message GetGameStateResponse {
   Game game = 1;
 }
 
-message Game {
-  repeated Player players  = 1;
-  Player active_player     = 2;
-  repeated Card active_set = 3;
+message GetPlayerStateRequest {
+  string game_id = 1;
+  int32 player_index = 2;
+}
 
+message GetPlayerStateResponse {
+  Player player = 1;
+}
+
+message Game {
+  string id = 1;
+  int32 active_player_index = 2;
+  repeated Card active_set = 3;
+  int32 active_set_player_index = 4;
+  int32 consecutive_scouts = 5;
+  int32 round = 6;
+  bool complete = 7;
 }
 
 message Player {
-  string name               = 1;
-  int32 index               = 2;
-  int32 score               = 3;
-  bool flip_hand_avail      = 4;
-  bool scout_and_show_avail = 5;
-  repeated Card hand        = 6;
+  string name = 1;
+  int32 index = 2;
+  int32 score = 3;
+  repeated Card hand = 4;
+  bool can_reverse_hand = 5;
+  bool can_scout_and_show = 6;
 }
 
 message Card {

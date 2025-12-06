@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ScoutService_CreateGame_FullMethodName   = "/scout.ScoutService/CreateGame"
-	ScoutService_Step_FullMethodName         = "/scout.ScoutService/Step"
-	ScoutService_GetGameState_FullMethodName = "/scout.ScoutService/GetGameState"
+	ScoutService_CreateGame_FullMethodName     = "/scout.ScoutService/CreateGame"
+	ScoutService_PlayerAction_FullMethodName   = "/scout.ScoutService/PlayerAction"
+	ScoutService_GetGameState_FullMethodName   = "/scout.ScoutService/GetGameState"
+	ScoutService_GetPlayerState_FullMethodName = "/scout.ScoutService/GetPlayerState"
 )
 
 // ScoutServiceClient is the client API for ScoutService service.
@@ -29,8 +30,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ScoutServiceClient interface {
 	CreateGame(ctx context.Context, in *CreateGameRequest, opts ...grpc.CallOption) (*CreateGameResponse, error)
-	Step(ctx context.Context, in *StepRequest, opts ...grpc.CallOption) (*StepResponse, error)
+	PlayerAction(ctx context.Context, in *PlayerActionRequest, opts ...grpc.CallOption) (*PlayerActionResponse, error)
 	GetGameState(ctx context.Context, in *GetGameStateRequest, opts ...grpc.CallOption) (*GetGameStateResponse, error)
+	GetPlayerState(ctx context.Context, in *GetPlayerStateRequest, opts ...grpc.CallOption) (*GetPlayerStateResponse, error)
 }
 
 type scoutServiceClient struct {
@@ -51,10 +53,10 @@ func (c *scoutServiceClient) CreateGame(ctx context.Context, in *CreateGameReque
 	return out, nil
 }
 
-func (c *scoutServiceClient) Step(ctx context.Context, in *StepRequest, opts ...grpc.CallOption) (*StepResponse, error) {
+func (c *scoutServiceClient) PlayerAction(ctx context.Context, in *PlayerActionRequest, opts ...grpc.CallOption) (*PlayerActionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StepResponse)
-	err := c.cc.Invoke(ctx, ScoutService_Step_FullMethodName, in, out, cOpts...)
+	out := new(PlayerActionResponse)
+	err := c.cc.Invoke(ctx, ScoutService_PlayerAction_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -71,13 +73,24 @@ func (c *scoutServiceClient) GetGameState(ctx context.Context, in *GetGameStateR
 	return out, nil
 }
 
+func (c *scoutServiceClient) GetPlayerState(ctx context.Context, in *GetPlayerStateRequest, opts ...grpc.CallOption) (*GetPlayerStateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPlayerStateResponse)
+	err := c.cc.Invoke(ctx, ScoutService_GetPlayerState_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ScoutServiceServer is the server API for ScoutService service.
 // All implementations must embed UnimplementedScoutServiceServer
 // for forward compatibility.
 type ScoutServiceServer interface {
 	CreateGame(context.Context, *CreateGameRequest) (*CreateGameResponse, error)
-	Step(context.Context, *StepRequest) (*StepResponse, error)
+	PlayerAction(context.Context, *PlayerActionRequest) (*PlayerActionResponse, error)
 	GetGameState(context.Context, *GetGameStateRequest) (*GetGameStateResponse, error)
+	GetPlayerState(context.Context, *GetPlayerStateRequest) (*GetPlayerStateResponse, error)
 	mustEmbedUnimplementedScoutServiceServer()
 }
 
@@ -91,11 +104,14 @@ type UnimplementedScoutServiceServer struct{}
 func (UnimplementedScoutServiceServer) CreateGame(context.Context, *CreateGameRequest) (*CreateGameResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateGame not implemented")
 }
-func (UnimplementedScoutServiceServer) Step(context.Context, *StepRequest) (*StepResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method Step not implemented")
+func (UnimplementedScoutServiceServer) PlayerAction(context.Context, *PlayerActionRequest) (*PlayerActionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method PlayerAction not implemented")
 }
 func (UnimplementedScoutServiceServer) GetGameState(context.Context, *GetGameStateRequest) (*GetGameStateResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetGameState not implemented")
+}
+func (UnimplementedScoutServiceServer) GetPlayerState(context.Context, *GetPlayerStateRequest) (*GetPlayerStateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetPlayerState not implemented")
 }
 func (UnimplementedScoutServiceServer) mustEmbedUnimplementedScoutServiceServer() {}
 func (UnimplementedScoutServiceServer) testEmbeddedByValue()                      {}
@@ -136,20 +152,20 @@ func _ScoutService_CreateGame_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ScoutService_Step_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StepRequest)
+func _ScoutService_PlayerAction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PlayerActionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ScoutServiceServer).Step(ctx, in)
+		return srv.(ScoutServiceServer).PlayerAction(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ScoutService_Step_FullMethodName,
+		FullMethod: ScoutService_PlayerAction_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ScoutServiceServer).Step(ctx, req.(*StepRequest))
+		return srv.(ScoutServiceServer).PlayerAction(ctx, req.(*PlayerActionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -172,6 +188,24 @@ func _ScoutService_GetGameState_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ScoutService_GetPlayerState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPlayerStateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ScoutServiceServer).GetPlayerState(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ScoutService_GetPlayerState_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ScoutServiceServer).GetPlayerState(ctx, req.(*GetPlayerStateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ScoutService_ServiceDesc is the grpc.ServiceDesc for ScoutService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -184,12 +218,16 @@ var ScoutService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ScoutService_CreateGame_Handler,
 		},
 		{
-			MethodName: "Step",
-			Handler:    _ScoutService_Step_Handler,
+			MethodName: "PlayerAction",
+			Handler:    _ScoutService_PlayerAction_Handler,
 		},
 		{
 			MethodName: "GetGameState",
 			Handler:    _ScoutService_GetGameState_Handler,
+		},
+		{
+			MethodName: "GetPlayerState",
+			Handler:    _ScoutService_GetPlayerState_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

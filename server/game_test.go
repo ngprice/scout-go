@@ -7,7 +7,7 @@ import (
 func TestGameInitialization(t *testing.T) {
 	game, err := NewGame(2)
 	if err != nil {
-		t.Fatal("NewGame returned err: %v", err)
+		t.Fatalf("NewGame returned err: %v", err)
 	}
 	if len(game.Players) != 2 {
 		t.Fatalf("expected 2 players, got %d", len(game.Players))
@@ -16,9 +16,9 @@ func TestGameInitialization(t *testing.T) {
 
 func TestHandDealtEvenly(t *testing.T) {
 	numPlayers := 4
-	game, err := NewGame(2)
+	game, err := NewGame(numPlayers)
 	if err != nil {
-		t.Fatal("NewGame returned err: %v", err)
+		t.Fatalf("NewGame returned err: %v", err)
 	}
 	if len(game.Players) != numPlayers {
 		t.Fatalf("expected %d players, got %d", numPlayers, len(game.Players))
