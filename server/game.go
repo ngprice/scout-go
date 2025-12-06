@@ -11,6 +11,7 @@ type Game struct {
 	ActiveSet         []*Card
 	ActiveSetPlayer   *Player
 	ConsecutiveScouts int
+	Round             int
 	Complete          bool
 }
 
@@ -81,16 +82,17 @@ func (g *Game) PlayerAction(playerIndex int, action string, params string) Rules
 	// set the next active player
 	g.ActivePlayer = g.Players[(g.ActivePlayer.Index+1)%len(g.Players)]
 
-	// check for completion
-	if g.checkCompletion(); g.Complete {
-		// final score calc
+	if g.checkRoundCompletion(); g.Complete {
 		g.calculateScores()
+		if g.checkGameCompletion(); g.Complete {
+			return nil // game over
+		}
 	}
 
 	return nil
 }
 
-func (g *Game) checkCompletion() {
+func (g *Game) checkRoundCompletion() {
 	// all others players have scouted in succession
 	if g.ConsecutiveScouts == len(g.Players)-1 {
 		g.Complete = true
@@ -98,6 +100,20 @@ func (g *Game) checkCompletion() {
 	// active player has emptied their hand
 	if len(g.ActivePlayer.Hand) == 0 {
 		g.Complete = true
+	}
+}
+
+func (g *Game) checkGameCompletion() {
+	// play a number of rounds equal to number of players
+	if g.Round >= len(g.Players) {
+		g.Complete = true
+	} else { // reset for next round
+		g.Round++
+		g.ActivePlayer = g.Players[g.Round]
+		g.ActiveSet = []*Card{}
+		g.ActiveSetPlayer = nil
+		g.ConsecutiveScouts = 0
+		g.Complete = false
 	}
 }
 
