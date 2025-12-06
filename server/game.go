@@ -15,7 +15,7 @@ type Game struct {
 	Complete          bool
 }
 
-func NewGame(numPlayers int) *Game {
+func NewGame(numPlayers int) (*Game, RulesViolation) {
 	// init players
 	players := make([]*Player, numPlayers)
 	for i := 0; i < numPlayers; i++ {
@@ -26,31 +26,17 @@ func NewGame(numPlayers int) *Game {
 		players[i] = player
 	}
 
-	// init deck
-	deckSize := 20 // example for now
-	cards := make([]*Card, deckSize)
-	for i := 0; i < deckSize; i++ {
-		card, err := NewCard(i+1, i+2)
-		if err != nil {
-			panic(err)
-		}
-		cards[i] = card
-	}
-
-	deck := NewDeck(cards)
-	deck.Shuffle()
+	deck, _ := NewGameDeck(numPlayers)
 
 	// deal cards to each player; players get same number of cards
-	for i := 0; i < numPlayers; i++ {
-		for j := 0; j < deckSize/numPlayers; j++ {
-			players[i].Hand = append(players[i].Hand, deck[i*numPlayers+j])
-		}
+	for i := 0; i < len(deck); i++ {
+		players[i%numPlayers].Hand = append(players[i%numPlayers].Hand, deck[i])
 	}
 
 	return &Game{
 		Players:      players,
 		ActivePlayer: players[0],
-	}
+	}, nil
 }
 
 func (g *Game) PlayerAction(playerIndex int, action string, params string) RulesViolation {

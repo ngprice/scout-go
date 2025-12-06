@@ -21,7 +21,10 @@ func NewScoutServer() *ScoutServer {
 func (s *ScoutServer) CreateGame(ctx context.Context, req *pb.CreateGameRequest) (*pb.CreateGameResponse, error) {
 	id := uuid.New().String()
 
-	game := NewGame(int(req.NumPlayers))
+	game, err := NewGame(int(req.NumPlayers))
+	if err != nil {
+		return nil, err
+	}
 	s.games[id] = game
 
 	return &pb.CreateGameResponse{
