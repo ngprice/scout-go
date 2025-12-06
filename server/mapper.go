@@ -3,7 +3,7 @@ package server
 import (
 	"encoding/json"
 	"log"
-	pb "scout-ai/proto"
+	pb "scout-go/proto"
 )
 
 func (g *Game) ToProto() *pb.Game {

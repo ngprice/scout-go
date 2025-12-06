@@ -20,8 +20,8 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
-	pb "scout-ai/proto"
-	"scout-ai/server"
+	pb "scout-go/proto"
+	"scout-go/server"
 )
 
 // Generic gRPC server main that:

@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	pb "scout-ai/proto"
+	pb "scout-go/proto"
 
 	"github.com/google/uuid"
 )

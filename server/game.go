@@ -78,22 +78,36 @@ func (g *Game) PlayerAction(playerIndex int, action string, params string) Rules
 		return err
 	}
 
-	// check for game completion
-	if g.checkCompletion(); g.Complete {
-		return nil // exit game loop
-	}
-
 	// set the next active player
 	g.ActivePlayer = g.Players[(g.ActivePlayer.Index+1)%len(g.Players)]
+
+	// check for completion
+	if g.checkCompletion(); g.Complete {
+		// final score calc
+		g.calculateScores()
+	}
 
 	return nil
 }
 
 func (g *Game) checkCompletion() {
+	// all others players have scouted in succession
 	if g.ConsecutiveScouts == len(g.Players)-1 {
 		g.Complete = true
 	}
+	// active player has emptied their hand
 	if len(g.ActivePlayer.Hand) == 0 {
 		g.Complete = true
+	}
+}
+
+func (g *Game) calculateScores() {
+	// lose a point for each card in hand, unless you played the set that ended the game
+	for _, p := range g.Players {
+		penalty := len(p.Hand)
+		if g.ActiveSetPlayer != nil && p.Index == g.ActiveSetPlayer.Index {
+			penalty = 0
+		}
+		p.Score -= penalty
 	}
 }
