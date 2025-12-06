@@ -6,6 +6,9 @@ import (
 	"strings"
 )
 
+// Game Action
+type GameAction func(params string) RulesViolation
+
 // Rules Validation
 type RulesViolation error
 
@@ -94,14 +97,25 @@ func setComparison(set, compSet []*Card) bool {
 // scoutAction lets the active player take a card from the active set and place it in their hand.
 // params is "takeIndex,putIndex", where takeIndex is the index of the card in the active set to take,
 // and putIndex is the index in the player's hand to insert the taken card.
+// if takeIndex is greater than the length of the active set, it indicates reversing
+// the values of the card at [takeIndex - len(activeSet)].
 func (g *Game) scoutAction(params string) RulesViolation {
 	p := g.ActivePlayer
 	takeIndex, putIndex := parseParams(params)
+	reverse := takeIndex >= len(g.ActiveSet)
+	if reverse {
+		takeIndex -= len(g.ActiveSet)
+	}
+
 	if takeIndex < 0 || takeIndex >= len(g.ActiveSet) {
 		return RulesViolation(fmt.Errorf("index out of range"))
 	}
 
 	card := g.ActiveSet[takeIndex]
+
+	if reverse {
+		card.ReverseValues()
+	}
 
 	// add to player's hand
 	p.Hand = append(p.Hand[:putIndex], append([]*Card{card}, p.Hand[putIndex:]...)...)

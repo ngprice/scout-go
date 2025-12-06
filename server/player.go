@@ -22,7 +22,7 @@ func NewPlayer(name string, index int) (*Player, error) {
 
 func (p *Player) FlipHand() {
 	for _, card := range p.Hand {
-		card.FlipValues()
+		card.ReverseValues()
 	}
 	p.FlipHandAvail = false
 }

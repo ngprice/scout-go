@@ -17,7 +17,7 @@ func NewCard(value1, value2 int) (*Card, error) {
 	}, nil
 }
 
-func (c *Card) FlipValues() {
+func (c *Card) ReverseValues() {
 	c.Value1, c.Value2 = c.Value2, c.Value1
 }
 
