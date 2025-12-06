@@ -14,9 +14,9 @@ type RulesViolation error
 
 // showAction lets the active player play a set of cards from their hand to the active set.
 func (g *Game) showAction(params string) RulesViolation {
-	p := g.ActivePlayer
-	// get subset of cards from hand
 	firstIndex, length := parseParams(params)
+	p := g.ActivePlayer
+
 	if firstIndex < 0 || firstIndex+length > len(p.Hand) {
 		return RulesViolation(fmt.Errorf("index out of range"))
 	}
@@ -100,15 +100,17 @@ func setComparison(set, compSet []*Card) bool {
 // if takeIndex is greater than the length of the active set, it indicates reversing
 // the values of the card at [takeIndex - len(activeSet)].
 func (g *Game) scoutAction(params string) RulesViolation {
-	p := g.ActivePlayer
 	takeIndex, putIndex := parseParams(params)
+	p := g.ActivePlayer
+
 	reverse := takeIndex >= len(g.ActiveSet)
 	if reverse {
 		takeIndex -= len(g.ActiveSet)
 	}
 
-	if takeIndex < 0 || takeIndex >= len(g.ActiveSet) {
-		return RulesViolation(fmt.Errorf("index out of range"))
+	// can only scout from the 'ends' of the active set
+	if takeIndex != 0 && takeIndex != len(g.ActiveSet)-1 {
+		return RulesViolation(fmt.Errorf("can only scout from ends of active set"))
 	}
 
 	card := g.ActiveSet[takeIndex]
