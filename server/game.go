@@ -62,6 +62,9 @@ func (g *Game) PlayerAction(playerIndex int, action string, params string) Rules
 	case "scoutandshow":
 		err = g.scoutAndShowAction(params)
 	case "reversehand":
+		if !g.ActivePlayer.CanReverseHand {
+			return RulesViolation(fmt.Errorf("cannot reverse hand"))
+		}
 		g.ActivePlayer.ReverseHand()
 		g.ActivePlayer.CanReverseHand = false
 		return nil

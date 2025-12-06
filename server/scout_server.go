@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	pb "scout-go/proto"
 )
 
@@ -30,6 +31,9 @@ func (s *ScoutServer) CreateGame(ctx context.Context, req *pb.CreateGameRequest)
 
 func (s *ScoutServer) PlayerAction(ctx context.Context, req *pb.PlayerActionRequest) (*pb.PlayerActionResponse, error) {
 	game := s.games[req.GameId]
+	if game == nil {
+		return nil, fmt.Errorf("invalid game_id")
+	}
 	err := game.PlayerAction(int(req.PlayerIndex), req.Action, req.Params)
 	var msg string
 	if err != nil {

@@ -89,8 +89,10 @@ func (g *Game) showAction(params string) RulesViolation {
 		}
 		p.Hand = newHand
 
-		// gain points equal to number of cards in active set
-		p.Score += len(set)
+		// gain points equal to number of cards in active set you beat
+		if g.ActiveSet != nil {
+			p.Score += len(g.ActiveSet)
+		}
 
 		// update active set
 		g.ActiveSet = set

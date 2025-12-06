@@ -8,12 +8,18 @@ import (
 
 func (g *Game) ToProto() *pb.Game {
 	protoGame := &pb.Game{
-		Id:                   g.Id,
-		ActivePlayerIndex:    int32(g.ActivePlayer.Index),
-		ActiveSetPlayerIndex: int32(g.ActiveSetPlayer.Index),
-		ConsecutiveScouts:    int32(g.ConsecutiveScouts),
-		Round:                int32(g.Round),
-		Complete:             g.Complete,
+		Id:                g.Id,
+		ConsecutiveScouts: int32(g.ConsecutiveScouts),
+		Round:             int32(g.Round),
+		Complete:          g.Complete,
+	}
+
+	if g.ActivePlayer != nil {
+		protoGame.ActivePlayerIndex = int32(g.ActivePlayer.Index)
+	}
+
+	if g.ActiveSetPlayer != nil {
+		protoGame.ActiveSetPlayerIndex = int32(g.ActiveSetPlayer.Index)
 	}
 
 	for _, card := range g.ActiveSet {
