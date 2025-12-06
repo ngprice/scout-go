@@ -41,8 +41,8 @@ func (p *Player) ToProto() *pb.Player {
 		Name:              p.Name,
 		Index:             int32(p.Index),
 		Score:             int32(p.Score),
-		FlipHandAvail:     p.FlipHandAvail,
-		ScoutAndShowAvail: p.ScoutAndShowAvail,
+		FlipHandAvail:     p.CanReverseHand,
+		ScoutAndShowAvail: p.CanScoutAndShow,
 		Hand:              hand,
 	}
 }

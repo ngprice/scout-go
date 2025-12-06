@@ -71,6 +71,10 @@ func (g *Game) PlayerAction(playerIndex int, action string, params string) Rules
 		err = g.showAction(params)
 	case "scoutandshow":
 		// TODO: implement scoutandshow logic
+	case "reversehand":
+		g.ActivePlayer.ReverseHand()
+		g.ActivePlayer.CanReverseHand = false
+		return nil
 	default:
 		return RulesViolation(fmt.Errorf("unknown action"))
 	}
@@ -78,6 +82,9 @@ func (g *Game) PlayerAction(playerIndex int, action string, params string) Rules
 	if err != nil {
 		return err
 	}
+
+	// can only reverse hand on the first round
+	g.ActivePlayer.CanReverseHand = false
 
 	// set the next active player
 	g.ActivePlayer = g.Players[(g.ActivePlayer.Index+1)%len(g.Players)]
@@ -114,6 +121,10 @@ func (g *Game) checkGameCompletion() {
 		g.ActiveSetPlayer = nil
 		g.ConsecutiveScouts = 0
 		g.Complete = false
+		for _, p := range g.Players {
+			p.CanReverseHand = true
+			p.CanScoutAndShow = true
+		}
 	}
 }
 
