@@ -15,27 +15,15 @@ type RulesViolation error
 // scoutAction lets the active player take a card from the active set and place it in their hand.
 // params is "takeIndex,putIndex", where takeIndex is the index of the card in the active set to take,
 // and putIndex is the index in the player's hand to insert the taken card.
-// if takeIndex is greater than the length of the active set, it indicates reversing
-// the values of the card at [takeIndex - len(activeSet)].
 func (g *Game) scoutAction(params string) RulesViolation {
 	takeIndex, putIndex := parseParams(params)
 	p := g.ActivePlayer
 
-	reverse := takeIndex >= len(g.ActiveSet)
-	if reverse {
-		takeIndex -= len(g.ActiveSet)
-	}
-
-	// can only scout from the 'ends' of the active set
-	if takeIndex != 0 && takeIndex != len(g.ActiveSet)-1 {
-		return RulesViolation(fmt.Errorf("can only scout from ends of active set"))
+	if !g.isValidScout(p, takeIndex, putIndex) {
+		return RulesViolation(fmt.Errorf("not a valid scout action"))
 	}
 
 	card := g.ActiveSet[takeIndex]
-
-	if reverse {
-		card.ReverseValues()
-	}
 
 	// add to player's hand
 	p.Hand = append(p.Hand[:putIndex], append([]*Card{card}, p.Hand[putIndex:]...)...)
@@ -58,6 +46,53 @@ func (g *Game) scoutAction(params string) RulesViolation {
 	g.ConsecutiveScouts += 1
 
 	return nil
+}
+
+// same as scoutAction, but reverses the card
+func (g *Game) scoutActionReverse(params string) RulesViolation {
+	takeIndex, putIndex := parseParams(params)
+	p := g.ActivePlayer
+
+	if !g.isValidScout(p, takeIndex, putIndex) {
+		return RulesViolation(fmt.Errorf("not a valid scout action"))
+	}
+
+	card := g.ActiveSet[takeIndex]
+
+	card.ReverseValues()
+
+	// add to player's hand
+	p.Hand = append(p.Hand[:putIndex], append([]*Card{card}, p.Hand[putIndex:]...)...)
+
+	// remove card from active set
+	newActiveSet := make([]*Card, 0)
+	for i, c := range g.ActiveSet {
+		if i != takeIndex {
+			newActiveSet = append(newActiveSet, c)
+		}
+	}
+	g.ActiveSet = newActiveSet
+
+	// award point to active set player
+	if g.ActiveSetPlayer != nil {
+		g.ActiveSetPlayer.Score += 1
+	}
+
+	// advance the ConsecutiveScouts counter
+	g.ConsecutiveScouts += 1
+
+	return nil
+}
+
+func (g *Game) isValidScout(p *Player, takeIndex, putIndex int) bool {
+	if len(g.ActiveSet) == 0 {
+		return false
+	}
+	if putIndex > len(p.Hand) {
+		return false
+	}
+	// can only scout from the 'ends' of the active set
+	return !(takeIndex != 0 && takeIndex != len(g.ActiveSet)-1)
 }
 
 // showAction lets the active player play a set of cards from their hand to the active set.
@@ -104,6 +139,18 @@ func (g *Game) showAction(params string) RulesViolation {
 	return RulesViolation(fmt.Errorf("set does not beat active set"))
 }
 
+func (g *Game) isValidShow(hand []*Card, firstIndex, length int) bool {
+	if firstIndex < 0 || firstIndex+length > len(hand) {
+		return false
+	}
+	set := hand[firstIndex : firstIndex+length]
+	err := validateSet(set)
+	if err != nil {
+		return false
+	}
+	return setComparison(set, g.ActiveSet)
+}
+
 // scoutAndShowAction lets the active player perform a scout action, immediately followed by
 // a show action. it can be used once per round.
 // params is "scoutParams|showParams", where each arg is the params string passed to the
@@ -127,6 +174,59 @@ func (g *Game) scoutAndShowAction(params string) RulesViolation {
 
 	g.ActivePlayer.CanScoutAndShow = false
 	return nil
+}
+
+func (g *Game) isValidScoutAndShow(p *Player, takeIndex, putIndex, startIndex, length int) bool {
+	if g.isValidScout(p, takeIndex, putIndex) {
+		// assemble the hand as it would be after scout
+		hand := make([]*Card, len(p.Hand))
+		copy(hand, p.Hand)
+		cardCopy := &Card{
+			Value1: g.ActiveSet[takeIndex].Value1,
+			Value2: g.ActiveSet[takeIndex].Value2,
+		}
+		hand = append(hand[:putIndex], append([]*Card{cardCopy}, hand[putIndex:]...)...)
+		return g.isValidShow(hand, startIndex, length)
+	}
+	return false
+}
+
+// same as scoutAndShow, but reverses the card
+func (g *Game) scoutAndShowActionReverse(params string) RulesViolation {
+	parts := strings.Split(params, "|")
+	if len(parts) != 2 {
+		return RulesViolation(fmt.Errorf("invalid scoutandshow parameters"))
+	}
+	scoutParams := parts[0]
+	showParams := parts[1]
+
+	err := g.scoutActionReverse(scoutParams)
+	if err != nil {
+		return err
+	}
+	err = g.showAction(showParams)
+	if err != nil {
+		return err
+	}
+
+	g.ActivePlayer.CanScoutAndShow = false
+	return nil
+}
+
+func (g *Game) isValidScoutAndShowReverse(p *Player, takeIndex, putIndex, startIndex, length int) bool {
+	if g.isValidScout(p, takeIndex, putIndex) {
+		// assemble the hand as it would be after scout
+		hand := make([]*Card, len(p.Hand))
+		copy(hand, p.Hand)
+		cardCopy := &Card{
+			Value1: g.ActiveSet[takeIndex].Value1,
+			Value2: g.ActiveSet[takeIndex].Value2,
+		}
+		cardCopy.ReverseValues()
+		hand = append(hand[:putIndex], append([]*Card{cardCopy}, hand[putIndex:]...)...)
+		return g.isValidShow(hand, startIndex, length)
+	}
+	return false
 }
 
 // parseParams splits params string into two integers. Returns -1,0 on error.
@@ -164,6 +264,9 @@ func setComparison(set, compSet []*Card) bool {
 
 	// matching beats consecutive
 	isSetConsecutive := func(s []*Card) bool {
+		if len(s) < 2 {
+			return false
+		}
 		return s[0].Value1 != s[1].Value1
 	}
 	if !isSetConsecutive(set) {

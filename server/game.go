@@ -57,10 +57,14 @@ func (g *Game) PlayerAction(playerIndex int, action string, params string) Rules
 	switch action {
 	case "scout":
 		err = g.scoutAction(params)
+	case "scoutreverse":
+		err = g.scoutActionReverse(params)
 	case "show":
 		err = g.showAction(params)
 	case "scoutandshow":
 		err = g.scoutAndShowAction(params)
+	case "scoutandshowreverse":
+		err = g.scoutAndShowActionReverse(params)
 	case "reversehand":
 		if !g.ActivePlayer.CanReverseHand {
 			return RulesViolation(fmt.Errorf("cannot reverse hand"))
@@ -90,6 +94,27 @@ func (g *Game) PlayerAction(playerIndex int, action string, params string) Rules
 	}
 
 	return nil
+}
+
+func (g *Game) IsActionValid(playerIndex int, action ActionType, paramA int, paramB int, paramC int, paramD int) bool {
+	p := g.Players[playerIndex]
+
+	switch action {
+	case ActionScout:
+		return g.isValidScout(p, paramA, paramB)
+	case ActionScoutReverse:
+		return g.isValidScout(p, paramA, paramB)
+	case ActionShow:
+		return g.isValidShow(p.Hand, paramA, paramB)
+	case ActionScoutAndShow:
+		return g.isValidScoutAndShow(p, paramA, paramB, paramC, paramD)
+	case ActionScoutAndShowReverse:
+		return g.isValidScoutAndShowReverse(p, paramA, paramB, paramC, paramD)
+	case ActionReverseHand:
+		return p.CanReverseHand
+	default:
+		return false
+	}
 }
 
 func (g *Game) checkRoundCompletion() {

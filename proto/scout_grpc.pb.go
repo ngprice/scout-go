@@ -19,10 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ScoutService_CreateGame_FullMethodName     = "/scout.ScoutService/CreateGame"
-	ScoutService_PlayerAction_FullMethodName   = "/scout.ScoutService/PlayerAction"
-	ScoutService_GetGameState_FullMethodName   = "/scout.ScoutService/GetGameState"
-	ScoutService_GetPlayerState_FullMethodName = "/scout.ScoutService/GetPlayerState"
+	ScoutService_CreateGame_FullMethodName      = "/scout.ScoutService/CreateGame"
+	ScoutService_PlayerAction_FullMethodName    = "/scout.ScoutService/PlayerAction"
+	ScoutService_GetGameState_FullMethodName    = "/scout.ScoutService/GetGameState"
+	ScoutService_GetPlayerState_FullMethodName  = "/scout.ScoutService/GetPlayerState"
+	ScoutService_GetValidActions_FullMethodName = "/scout.ScoutService/GetValidActions"
 )
 
 // ScoutServiceClient is the client API for ScoutService service.
@@ -33,6 +34,7 @@ type ScoutServiceClient interface {
 	PlayerAction(ctx context.Context, in *PlayerActionRequest, opts ...grpc.CallOption) (*PlayerActionResponse, error)
 	GetGameState(ctx context.Context, in *GetGameStateRequest, opts ...grpc.CallOption) (*GetGameStateResponse, error)
 	GetPlayerState(ctx context.Context, in *GetPlayerStateRequest, opts ...grpc.CallOption) (*GetPlayerStateResponse, error)
+	GetValidActions(ctx context.Context, in *GetValidActionsRequest, opts ...grpc.CallOption) (*GetValidActionsResponse, error)
 }
 
 type scoutServiceClient struct {
@@ -83,6 +85,16 @@ func (c *scoutServiceClient) GetPlayerState(ctx context.Context, in *GetPlayerSt
 	return out, nil
 }
 
+func (c *scoutServiceClient) GetValidActions(ctx context.Context, in *GetValidActionsRequest, opts ...grpc.CallOption) (*GetValidActionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetValidActionsResponse)
+	err := c.cc.Invoke(ctx, ScoutService_GetValidActions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ScoutServiceServer is the server API for ScoutService service.
 // All implementations must embed UnimplementedScoutServiceServer
 // for forward compatibility.
@@ -91,6 +103,7 @@ type ScoutServiceServer interface {
 	PlayerAction(context.Context, *PlayerActionRequest) (*PlayerActionResponse, error)
 	GetGameState(context.Context, *GetGameStateRequest) (*GetGameStateResponse, error)
 	GetPlayerState(context.Context, *GetPlayerStateRequest) (*GetPlayerStateResponse, error)
+	GetValidActions(context.Context, *GetValidActionsRequest) (*GetValidActionsResponse, error)
 	mustEmbedUnimplementedScoutServiceServer()
 }
 
@@ -112,6 +125,9 @@ func (UnimplementedScoutServiceServer) GetGameState(context.Context, *GetGameSta
 }
 func (UnimplementedScoutServiceServer) GetPlayerState(context.Context, *GetPlayerStateRequest) (*GetPlayerStateResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetPlayerState not implemented")
+}
+func (UnimplementedScoutServiceServer) GetValidActions(context.Context, *GetValidActionsRequest) (*GetValidActionsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetValidActions not implemented")
 }
 func (UnimplementedScoutServiceServer) mustEmbedUnimplementedScoutServiceServer() {}
 func (UnimplementedScoutServiceServer) testEmbeddedByValue()                      {}
@@ -206,6 +222,24 @@ func _ScoutService_GetPlayerState_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ScoutService_GetValidActions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetValidActionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ScoutServiceServer).GetValidActions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ScoutService_GetValidActions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ScoutServiceServer).GetValidActions(ctx, req.(*GetValidActionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ScoutService_ServiceDesc is the grpc.ServiceDesc for ScoutService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -228,6 +262,10 @@ var ScoutService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPlayerState",
 			Handler:    _ScoutService_GetPlayerState_Handler,
+		},
+		{
+			MethodName: "GetValidActions",
+			Handler:    _ScoutService_GetValidActions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
