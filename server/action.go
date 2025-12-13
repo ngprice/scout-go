@@ -2,21 +2,12 @@ package server
 
 import (
 	"fmt"
-	"strconv"
-	"strings"
 )
 
-// Game Action
-type GameAction func(params string) RulesViolation
-
-// Rules Validation
-type RulesViolation error
-
 // scoutAction lets the active player take a card from the active set and place it in their hand.
-// params is "takeIndex,putIndex", where takeIndex is the index of the card in the active set to take,
+// params are (takeIndex, putIndex), where takeIndex is the index of the card in the active set to take,
 // and putIndex is the index in the player's hand to insert the taken card.
-func (g *Game) scoutAction(params string) RulesViolation {
-	takeIndex, putIndex := parseParams(params)
+func (g *Game) scoutAction(takeIndex, putIndex int) RulesViolation {
 	p := g.ActivePlayer
 
 	if !g.isValidScout(p, takeIndex, putIndex) {
@@ -49,8 +40,7 @@ func (g *Game) scoutAction(params string) RulesViolation {
 }
 
 // same as scoutAction, but reverses the card
-func (g *Game) scoutActionReverse(params string) RulesViolation {
-	takeIndex, putIndex := parseParams(params)
+func (g *Game) scoutActionReverse(takeIndex, putIndex int) RulesViolation {
 	p := g.ActivePlayer
 
 	if !g.isValidScout(p, takeIndex, putIndex) {
@@ -96,10 +86,9 @@ func (g *Game) isValidScout(p *Player, takeIndex, putIndex int) bool {
 }
 
 // showAction lets the active player play a set of cards from their hand to the active set.
-// params is "firstIndex,length", where firstIndex is the index in the active player's hand
+// params are (firstIndex, length), where firstIndex is the index in the active player's hand
 // to start the set, and length is the length of the set.
-func (g *Game) showAction(params string) RulesViolation {
-	firstIndex, length := parseParams(params)
+func (g *Game) showAction(firstIndex, length int) RulesViolation {
 	p := g.ActivePlayer
 
 	if firstIndex < 0 || firstIndex+length > len(p.Hand) {
@@ -153,21 +142,14 @@ func (g *Game) isValidShow(hand []*Card, firstIndex, length int) bool {
 
 // scoutAndShowAction lets the active player perform a scout action, immediately followed by
 // a show action. it can be used once per round.
-// params is "scoutParams|showParams", where each arg is the params string passed to the
-// action. for example, "0,1|1,3" is equivalent to scoutAction("0,1") and showAction("1,3")
-func (g *Game) scoutAndShowAction(params string) RulesViolation {
-	parts := strings.Split(params, "|")
-	if len(parts) != 2 {
-		return RulesViolation(fmt.Errorf("invalid scoutandshow parameters"))
-	}
-	scoutParams := parts[0]
-	showParams := parts[1]
-
-	err := g.scoutAction(scoutParams)
+// params are ({scoutParams}, {showParams}), where each arg is the params string passed to the
+// action. for example, (0,1,1,3) is equivalent to scoutAction(0, 1), then showAction(1, 3)
+func (g *Game) scoutAndShowAction(takeIndex, putIndex, firstIndex, length int) RulesViolation {
+	err := g.scoutAction(takeIndex, putIndex)
 	if err != nil {
 		return err
 	}
-	err = g.showAction(showParams)
+	err = g.showAction(firstIndex, length)
 	if err != nil {
 		return err
 	}
@@ -192,19 +174,12 @@ func (g *Game) isValidScoutAndShow(p *Player, takeIndex, putIndex, startIndex, l
 }
 
 // same as scoutAndShow, but reverses the card
-func (g *Game) scoutAndShowActionReverse(params string) RulesViolation {
-	parts := strings.Split(params, "|")
-	if len(parts) != 2 {
-		return RulesViolation(fmt.Errorf("invalid scoutandshow parameters"))
-	}
-	scoutParams := parts[0]
-	showParams := parts[1]
-
-	err := g.scoutActionReverse(scoutParams)
+func (g *Game) scoutAndShowActionReverse(takeIndex, putIndex, firstIndex, length int) RulesViolation {
+	err := g.scoutActionReverse(takeIndex, putIndex)
 	if err != nil {
 		return err
 	}
-	err = g.showAction(showParams)
+	err = g.showAction(firstIndex, length)
 	if err != nil {
 		return err
 	}
@@ -227,25 +202,6 @@ func (g *Game) isValidScoutAndShowReverse(p *Player, takeIndex, putIndex, startI
 		return g.isValidShow(hand, startIndex, length)
 	}
 	return false
-}
-
-// parseParams splits params string into two integers. Returns -1,0 on error.
-func parseParams(params string) (int, int) {
-	parts := strings.Split(params, ",")
-	if len(parts) != 2 {
-		return -1, 0
-	}
-
-	p1, err := strconv.Atoi(strings.TrimSpace(parts[0]))
-	if err != nil {
-		return -1, 0
-	}
-	p2, err := strconv.Atoi(strings.TrimSpace(parts[1]))
-	if err != nil {
-		return -1, 0
-	}
-
-	return p1, p2
 }
 
 // returns true if set beats compSet, false otherwise
