@@ -43,7 +43,7 @@ func NewGame(numPlayers int) (*Game, RulesViolation) {
 	}, nil
 }
 
-func (g *Game) PlayerAction(playerIndex int, action string, params string) RulesViolation {
+func (g *Game) PlayerAction(playerIndex int, action *ActionSpec) RulesViolation {
 	if g.Complete {
 		return RulesViolation(fmt.Errorf("game is complete"))
 	}
@@ -52,35 +52,11 @@ func (g *Game) PlayerAction(playerIndex int, action string, params string) Rules
 		return RulesViolation(fmt.Errorf("not your turn"))
 	}
 
-	var err RulesViolation
-
-	switch action {
-	case "scout":
-		err = g.scoutAction(params)
-	case "scoutreverse":
-		err = g.scoutActionReverse(params)
-	case "show":
-		err = g.showAction(params)
-	case "scoutandshow":
-		err = g.scoutAndShowAction(params)
-	case "scoutandshowreverse":
-		err = g.scoutAndShowActionReverse(params)
-	case "reversehand":
-		if !g.ActivePlayer.CanReverseHand {
-			return RulesViolation(fmt.Errorf("cannot reverse hand"))
-		}
-		g.ActivePlayer.ReverseHand()
-		g.ActivePlayer.CanReverseHand = false
-		return nil
-	default:
-		return RulesViolation(fmt.Errorf("unknown action"))
+	if !g.IsActionValid(playerIndex, action) {
+		return RulesViolation(fmt.Errorf("action is invalid"))
 	}
 
-	if err != nil {
-		return err
-	}
-
-	// can only reverse hand on the first round
+	// prevent reverse hand after the first round
 	g.ActivePlayer.CanReverseHand = false
 
 	// set the next active player
@@ -96,20 +72,20 @@ func (g *Game) PlayerAction(playerIndex int, action string, params string) Rules
 	return nil
 }
 
-func (g *Game) IsActionValid(playerIndex int, action ActionType, paramA int, paramB int, paramC int, paramD int) bool {
+func (g *Game) IsActionValid(playerIndex int, action *ActionSpec) bool {
 	p := g.Players[playerIndex]
 
-	switch action {
+	switch action.Type {
 	case ActionScout:
-		return g.isValidScout(p, paramA, paramB)
+		return g.isValidScout(p, action.A, action.B)
 	case ActionScoutReverse:
-		return g.isValidScout(p, paramA, paramB)
+		return g.isValidScout(p, action.A, action.B)
 	case ActionShow:
-		return g.isValidShow(p.Hand, paramA, paramB)
+		return g.isValidShow(p.Hand, action.A, action.B)
 	case ActionScoutAndShow:
-		return g.isValidScoutAndShow(p, paramA, paramB, paramC, paramD)
+		return g.isValidScoutAndShow(p, action.A, action.B, action.C, action.D)
 	case ActionScoutAndShowReverse:
-		return g.isValidScoutAndShowReverse(p, paramA, paramB, paramC, paramD)
+		return g.isValidScoutAndShowReverse(p, action.A, action.B, action.C, action.D)
 	case ActionReverseHand:
 		return p.CanReverseHand
 	default:
@@ -129,11 +105,11 @@ func (g *Game) checkRoundCompletion() {
 }
 
 func (g *Game) checkGameCompletion() {
+	g.Round++
 	// play a number of rounds equal to number of players
 	if g.Round >= len(g.Players) {
 		g.Complete = true
 	} else { // reset for next round
-		g.Round++
 		g.ActivePlayer = g.Players[g.Round]
 		g.ActiveSet = []*Card{}
 		g.ActiveSetPlayer = nil

@@ -4,12 +4,54 @@ package scout;
 
 option go_package = "scout-go/proto;proto";
 
+message Action {
+  enum ActionType {
+    	ActionScout = 0;
+      ActionScoutReverse = 1;
+      ActionShow = 2;
+      ActionScoutAndShow = 3;
+      ActionScoutAndShowReverse = 4;
+      ActionReverseHand = 5;
+  }
+  int32 id = 1;
+  ActionType actionType = 2;
+  int32 paramA = 3;
+  int32 paramB = 4;
+  int32 paramC = 5;
+  int32 paramD = 6;
+}
+
+message Game {
+  string id = 1;
+  int32 active_player_index = 2;
+  repeated Card active_set = 3;
+  int32 active_set_player_index = 4;
+  int32 consecutive_scouts = 5;
+  int32 round = 6;
+  bool complete = 7;
+}
+
+message Player {
+  string name = 1;
+  int32 index = 2;
+  int32 score = 3;
+  repeated Card hand = 4;
+  bool can_reverse_hand = 5;
+  bool can_scout_and_show = 6;
+}
+
+message Card {
+  int32 value1 = 1;
+  int32 value2 = 2;
+}
+
+
 service ScoutService {
-  rpc CreateGame   (CreateGameRequest) returns (CreateGameResponse);
-  rpc PlayerAction         (PlayerActionRequest)       returns (PlayerActionResponse);
-  rpc GetGameState (GetGameStateRequest) returns (GetGameStateResponse);
-  rpc GetPlayerState (GetPlayerStateRequest) returns (GetPlayerStateResponse);
-  rpc GetValidActions(GetValidActionsRequest) returns (GetValidActionsResponse);
+  rpc CreateGame      (CreateGameRequest)      returns (CreateGameResponse);
+  rpc PlayerAction    (PlayerActionRequest)    returns (PlayerActionResponse);
+  rpc GetGameState    (GetGameStateRequest)    returns (GetGameStateResponse);
+  rpc GetPlayerState  (GetPlayerStateRequest)  returns (GetPlayerStateResponse);
+  rpc GetValidActions (GetValidActionsRequest) returns (GetValidActionsResponse);
 }
 
 message CreateGameRequest {
@@ -23,8 +65,7 @@ message CreateGameResponse {
 message PlayerActionRequest {
   string game_id = 1;
   int32 player_index = 2;
-  string action = 3;
-  string params = 4;
+  Action action = 3;
 }
 
 message PlayerActionResponse {
@@ -56,28 +97,4 @@ message GetValidActionsRequest {
 
 message GetValidActionsResponse {
   repeated bool mask = 1;
-}
-
-message Game {
-  string id = 1;
-  int32 active_player_index = 2;
-  repeated Card active_set = 3;
-  int32 active_set_player_index = 4;
-  int32 consecutive_scouts = 5;
-  int32 round = 6;
-  bool complete = 7;
-}
-
-message Player {
-  string name = 1;
-  int32 index = 2;
-  int32 score = 3;
-  repeated Card hand = 4;
-  bool can_reverse_hand = 5;
-  bool can_scout_and_show = 6;
-}
-
-message Card {
-  int32 value1 = 1;
-  int32 value2 = 2;
 }

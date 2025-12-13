@@ -5,6 +5,9 @@ import (
 	"math"
 )
 
+// Rules Validation
+type RulesViolation error
+
 // validateSet checks if the provided set of cards is valid according to game rules.
 func validateSet(set []*Card) RulesViolation {
 	if len(set) == 0 {

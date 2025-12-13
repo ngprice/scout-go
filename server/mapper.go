@@ -60,3 +60,14 @@ func (c *Card) ToProto() *pb.Card {
 		Value2: int32(c.Value2),
 	}
 }
+
+func ToActionSpec(action *pb.Action) *ActionSpec {
+	return &ActionSpec{
+		ID:   0, // internal use only
+		Type: ActionType(action.ActionType),
+		A:    int(action.ParamA),
+		B:    int(action.ParamB),
+		C:    int(action.ParamC),
+		D:    int(action.ParamD),
+	}
+}
