@@ -26,6 +26,14 @@ func (g *Game) ToProto() *pb.Game {
 		protoGame.ActiveSet = append(protoGame.ActiveSet, card.ToProto())
 	}
 
+	for _, player := range g.Players {
+		player_hand := &pb.PlayerHandSize{
+			PlayerIndex: int32(player.Index),
+			HandSize:    int32(len(player.Hand)),
+		}
+		protoGame.PlayerHandSize = append(protoGame.PlayerHandSize, player_hand)
+	}
+
 	return protoGame
 }
 

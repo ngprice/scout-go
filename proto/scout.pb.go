@@ -172,6 +172,7 @@ type Game struct {
 	ConsecutiveScouts    int32                  `protobuf:"varint,5,opt,name=consecutive_scouts,json=consecutiveScouts,proto3" json:"consecutive_scouts,omitempty"`
 	Round                int32                  `protobuf:"varint,6,opt,name=round,proto3" json:"round,omitempty"`
 	Complete             bool                   `protobuf:"varint,7,opt,name=complete,proto3" json:"complete,omitempty"`
+	PlayerHandSize       []*PlayerHandSize      `protobuf:"bytes,8,rep,name=player_hand_size,json=playerHandSize,proto3" json:"player_hand_size,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
 }
@@ -253,6 +254,13 @@ func (x *Game) GetComplete() bool {
 		return x.Complete
 	}
 	return false
+}
+
+func (x *Game) GetPlayerHandSize() []*PlayerHandSize {
+	if x != nil {
+		return x.PlayerHandSize
+	}
+	return nil
 }
 
 type Player struct {
@@ -391,6 +399,58 @@ func (x *Card) GetValue2() int32 {
 	return 0
 }
 
+type PlayerHandSize struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PlayerIndex   int32                  `protobuf:"varint,1,opt,name=player_index,json=playerIndex,proto3" json:"player_index,omitempty"`
+	HandSize      int32                  `protobuf:"varint,2,opt,name=hand_size,json=handSize,proto3" json:"hand_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PlayerHandSize) Reset() {
+	*x = PlayerHandSize{}
+	mi := &file_proto_scout_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PlayerHandSize) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PlayerHandSize) ProtoMessage() {}
+
+func (x *PlayerHandSize) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_scout_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PlayerHandSize.ProtoReflect.Descriptor instead.
+func (*PlayerHandSize) Descriptor() ([]byte, []int) {
+	return file_proto_scout_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *PlayerHandSize) GetPlayerIndex() int32 {
+	if x != nil {
+		return x.PlayerIndex
+	}
+	return 0
+}
+
+func (x *PlayerHandSize) GetHandSize() int32 {
+	if x != nil {
+		return x.HandSize
+	}
+	return 0
+}
+
 type CreateGameRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	NumPlayers    int32                  `protobuf:"varint,1,opt,name=num_players,json=numPlayers,proto3" json:"num_players,omitempty"`
@@ -400,7 +460,7 @@ type CreateGameRequest struct {
 
 func (x *CreateGameRequest) Reset() {
 	*x = CreateGameRequest{}
-	mi := &file_proto_scout_proto_msgTypes[4]
+	mi := &file_proto_scout_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -412,7 +472,7 @@ func (x *CreateGameRequest) String() string {
 func (*CreateGameRequest) ProtoMessage() {}
 
 func (x *CreateGameRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scout_proto_msgTypes[4]
+	mi := &file_proto_scout_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -425,7 +485,7 @@ func (x *CreateGameRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateGameRequest.ProtoReflect.Descriptor instead.
 func (*CreateGameRequest) Descriptor() ([]byte, []int) {
-	return file_proto_scout_proto_rawDescGZIP(), []int{4}
+	return file_proto_scout_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CreateGameRequest) GetNumPlayers() int32 {
@@ -444,7 +504,7 @@ type CreateGameResponse struct {
 
 func (x *CreateGameResponse) Reset() {
 	*x = CreateGameResponse{}
-	mi := &file_proto_scout_proto_msgTypes[5]
+	mi := &file_proto_scout_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -456,7 +516,7 @@ func (x *CreateGameResponse) String() string {
 func (*CreateGameResponse) ProtoMessage() {}
 
 func (x *CreateGameResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scout_proto_msgTypes[5]
+	mi := &file_proto_scout_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -469,7 +529,7 @@ func (x *CreateGameResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateGameResponse.ProtoReflect.Descriptor instead.
 func (*CreateGameResponse) Descriptor() ([]byte, []int) {
-	return file_proto_scout_proto_rawDescGZIP(), []int{5}
+	return file_proto_scout_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *CreateGameResponse) GetGameId() string {
@@ -490,7 +550,7 @@ type PlayerActionRequest struct {
 
 func (x *PlayerActionRequest) Reset() {
 	*x = PlayerActionRequest{}
-	mi := &file_proto_scout_proto_msgTypes[6]
+	mi := &file_proto_scout_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -502,7 +562,7 @@ func (x *PlayerActionRequest) String() string {
 func (*PlayerActionRequest) ProtoMessage() {}
 
 func (x *PlayerActionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scout_proto_msgTypes[6]
+	mi := &file_proto_scout_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -515,7 +575,7 @@ func (x *PlayerActionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlayerActionRequest.ProtoReflect.Descriptor instead.
 func (*PlayerActionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_scout_proto_rawDescGZIP(), []int{6}
+	return file_proto_scout_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *PlayerActionRequest) GetGameId() string {
@@ -549,7 +609,7 @@ type PlayerActionResponse struct {
 
 func (x *PlayerActionResponse) Reset() {
 	*x = PlayerActionResponse{}
-	mi := &file_proto_scout_proto_msgTypes[7]
+	mi := &file_proto_scout_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -561,7 +621,7 @@ func (x *PlayerActionResponse) String() string {
 func (*PlayerActionResponse) ProtoMessage() {}
 
 func (x *PlayerActionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scout_proto_msgTypes[7]
+	mi := &file_proto_scout_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -574,7 +634,7 @@ func (x *PlayerActionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlayerActionResponse.ProtoReflect.Descriptor instead.
 func (*PlayerActionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_scout_proto_rawDescGZIP(), []int{7}
+	return file_proto_scout_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *PlayerActionResponse) GetErr() bool {
@@ -600,7 +660,7 @@ type GetGameStateRequest struct {
 
 func (x *GetGameStateRequest) Reset() {
 	*x = GetGameStateRequest{}
-	mi := &file_proto_scout_proto_msgTypes[8]
+	mi := &file_proto_scout_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -612,7 +672,7 @@ func (x *GetGameStateRequest) String() string {
 func (*GetGameStateRequest) ProtoMessage() {}
 
 func (x *GetGameStateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scout_proto_msgTypes[8]
+	mi := &file_proto_scout_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -625,7 +685,7 @@ func (x *GetGameStateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGameStateRequest.ProtoReflect.Descriptor instead.
 func (*GetGameStateRequest) Descriptor() ([]byte, []int) {
-	return file_proto_scout_proto_rawDescGZIP(), []int{8}
+	return file_proto_scout_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetGameStateRequest) GetGameId() string {
@@ -644,7 +704,7 @@ type GetGameStateResponse struct {
 
 func (x *GetGameStateResponse) Reset() {
 	*x = GetGameStateResponse{}
-	mi := &file_proto_scout_proto_msgTypes[9]
+	mi := &file_proto_scout_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -656,7 +716,7 @@ func (x *GetGameStateResponse) String() string {
 func (*GetGameStateResponse) ProtoMessage() {}
 
 func (x *GetGameStateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scout_proto_msgTypes[9]
+	mi := &file_proto_scout_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -669,7 +729,7 @@ func (x *GetGameStateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGameStateResponse.ProtoReflect.Descriptor instead.
 func (*GetGameStateResponse) Descriptor() ([]byte, []int) {
-	return file_proto_scout_proto_rawDescGZIP(), []int{9}
+	return file_proto_scout_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetGameStateResponse) GetGame() *Game {
@@ -689,7 +749,7 @@ type GetPlayerStateRequest struct {
 
 func (x *GetPlayerStateRequest) Reset() {
 	*x = GetPlayerStateRequest{}
-	mi := &file_proto_scout_proto_msgTypes[10]
+	mi := &file_proto_scout_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -701,7 +761,7 @@ func (x *GetPlayerStateRequest) String() string {
 func (*GetPlayerStateRequest) ProtoMessage() {}
 
 func (x *GetPlayerStateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scout_proto_msgTypes[10]
+	mi := &file_proto_scout_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -714,7 +774,7 @@ func (x *GetPlayerStateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPlayerStateRequest.ProtoReflect.Descriptor instead.
 func (*GetPlayerStateRequest) Descriptor() ([]byte, []int) {
-	return file_proto_scout_proto_rawDescGZIP(), []int{10}
+	return file_proto_scout_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetPlayerStateRequest) GetGameId() string {
@@ -740,7 +800,7 @@ type GetPlayerStateResponse struct {
 
 func (x *GetPlayerStateResponse) Reset() {
 	*x = GetPlayerStateResponse{}
-	mi := &file_proto_scout_proto_msgTypes[11]
+	mi := &file_proto_scout_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -752,7 +812,7 @@ func (x *GetPlayerStateResponse) String() string {
 func (*GetPlayerStateResponse) ProtoMessage() {}
 
 func (x *GetPlayerStateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scout_proto_msgTypes[11]
+	mi := &file_proto_scout_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -765,7 +825,7 @@ func (x *GetPlayerStateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPlayerStateResponse.ProtoReflect.Descriptor instead.
 func (*GetPlayerStateResponse) Descriptor() ([]byte, []int) {
-	return file_proto_scout_proto_rawDescGZIP(), []int{11}
+	return file_proto_scout_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetPlayerStateResponse) GetPlayer() *Player {
@@ -785,7 +845,7 @@ type GetValidActionsRequest struct {
 
 func (x *GetValidActionsRequest) Reset() {
 	*x = GetValidActionsRequest{}
-	mi := &file_proto_scout_proto_msgTypes[12]
+	mi := &file_proto_scout_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -797,7 +857,7 @@ func (x *GetValidActionsRequest) String() string {
 func (*GetValidActionsRequest) ProtoMessage() {}
 
 func (x *GetValidActionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scout_proto_msgTypes[12]
+	mi := &file_proto_scout_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -810,7 +870,7 @@ func (x *GetValidActionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetValidActionsRequest.ProtoReflect.Descriptor instead.
 func (*GetValidActionsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_scout_proto_rawDescGZIP(), []int{12}
+	return file_proto_scout_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetValidActionsRequest) GetGameId() string {
@@ -836,7 +896,7 @@ type GetValidActionsResponse struct {
 
 func (x *GetValidActionsResponse) Reset() {
 	*x = GetValidActionsResponse{}
-	mi := &file_proto_scout_proto_msgTypes[13]
+	mi := &file_proto_scout_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -848,7 +908,7 @@ func (x *GetValidActionsResponse) String() string {
 func (*GetValidActionsResponse) ProtoMessage() {}
 
 func (x *GetValidActionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scout_proto_msgTypes[13]
+	mi := &file_proto_scout_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -861,7 +921,7 @@ func (x *GetValidActionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetValidActionsResponse.ProtoReflect.Descriptor instead.
 func (*GetValidActionsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_scout_proto_rawDescGZIP(), []int{13}
+	return file_proto_scout_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetValidActionsResponse) GetMask() []bool {
@@ -893,7 +953,7 @@ const file_proto_scout_proto_rawDesc = "" +
 	"ActionShow\x10\x02\x12\x16\n" +
 	"\x12ActionScoutAndShow\x10\x03\x12\x1d\n" +
 	"\x19ActionScoutAndShowReverse\x10\x04\x12\x15\n" +
-	"\x11ActionReverseHand\x10\x05\"\x8a\x02\n" +
+	"\x11ActionReverseHand\x10\x05\"\xcb\x02\n" +
 	"\x04Game\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12.\n" +
 	"\x13active_player_index\x18\x02 \x01(\x05R\x11activePlayerIndex\x12*\n" +
@@ -902,7 +962,8 @@ const file_proto_scout_proto_rawDesc = "" +
 	"\x17active_set_player_index\x18\x04 \x01(\x05R\x14activeSetPlayerIndex\x12-\n" +
 	"\x12consecutive_scouts\x18\x05 \x01(\x05R\x11consecutiveScouts\x12\x14\n" +
 	"\x05round\x18\x06 \x01(\x05R\x05round\x12\x1a\n" +
-	"\bcomplete\x18\a \x01(\bR\bcomplete\"\xc0\x01\n" +
+	"\bcomplete\x18\a \x01(\bR\bcomplete\x12?\n" +
+	"\x10player_hand_size\x18\b \x03(\v2\x15.scout.PlayerHandSizeR\x0eplayerHandSize\"\xc0\x01\n" +
 	"\x06Player\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05index\x18\x02 \x01(\x05R\x05index\x12\x14\n" +
@@ -912,7 +973,10 @@ const file_proto_scout_proto_rawDesc = "" +
 	"\x12can_scout_and_show\x18\x06 \x01(\bR\x0fcanScoutAndShow\"6\n" +
 	"\x04Card\x12\x16\n" +
 	"\x06value1\x18\x01 \x01(\x05R\x06value1\x12\x16\n" +
-	"\x06value2\x18\x02 \x01(\x05R\x06value2\"4\n" +
+	"\x06value2\x18\x02 \x01(\x05R\x06value2\"P\n" +
+	"\x0ePlayerHandSize\x12!\n" +
+	"\fplayer_index\x18\x01 \x01(\x05R\vplayerIndex\x12\x1b\n" +
+	"\thand_size\x18\x02 \x01(\x05R\bhandSize\"4\n" +
 	"\x11CreateGameRequest\x12\x1f\n" +
 	"\vnum_players\x18\x01 \x01(\x05R\n" +
 	"numPlayers\"-\n" +
@@ -960,46 +1024,48 @@ func file_proto_scout_proto_rawDescGZIP() []byte {
 }
 
 var file_proto_scout_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_scout_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_proto_scout_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_proto_scout_proto_goTypes = []any{
 	(Action_ActionType)(0),          // 0: scout.Action.ActionType
 	(*Action)(nil),                  // 1: scout.Action
 	(*Game)(nil),                    // 2: scout.Game
 	(*Player)(nil),                  // 3: scout.Player
 	(*Card)(nil),                    // 4: scout.Card
-	(*CreateGameRequest)(nil),       // 5: scout.CreateGameRequest
-	(*CreateGameResponse)(nil),      // 6: scout.CreateGameResponse
-	(*PlayerActionRequest)(nil),     // 7: scout.PlayerActionRequest
-	(*PlayerActionResponse)(nil),    // 8: scout.PlayerActionResponse
-	(*GetGameStateRequest)(nil),     // 9: scout.GetGameStateRequest
-	(*GetGameStateResponse)(nil),    // 10: scout.GetGameStateResponse
-	(*GetPlayerStateRequest)(nil),   // 11: scout.GetPlayerStateRequest
-	(*GetPlayerStateResponse)(nil),  // 12: scout.GetPlayerStateResponse
-	(*GetValidActionsRequest)(nil),  // 13: scout.GetValidActionsRequest
-	(*GetValidActionsResponse)(nil), // 14: scout.GetValidActionsResponse
+	(*PlayerHandSize)(nil),          // 5: scout.PlayerHandSize
+	(*CreateGameRequest)(nil),       // 6: scout.CreateGameRequest
+	(*CreateGameResponse)(nil),      // 7: scout.CreateGameResponse
+	(*PlayerActionRequest)(nil),     // 8: scout.PlayerActionRequest
+	(*PlayerActionResponse)(nil),    // 9: scout.PlayerActionResponse
+	(*GetGameStateRequest)(nil),     // 10: scout.GetGameStateRequest
+	(*GetGameStateResponse)(nil),    // 11: scout.GetGameStateResponse
+	(*GetPlayerStateRequest)(nil),   // 12: scout.GetPlayerStateRequest
+	(*GetPlayerStateResponse)(nil),  // 13: scout.GetPlayerStateResponse
+	(*GetValidActionsRequest)(nil),  // 14: scout.GetValidActionsRequest
+	(*GetValidActionsResponse)(nil), // 15: scout.GetValidActionsResponse
 }
 var file_proto_scout_proto_depIdxs = []int32{
 	0,  // 0: scout.Action.actionType:type_name -> scout.Action.ActionType
 	4,  // 1: scout.Game.active_set:type_name -> scout.Card
-	4,  // 2: scout.Player.hand:type_name -> scout.Card
-	1,  // 3: scout.PlayerActionRequest.action:type_name -> scout.Action
-	2,  // 4: scout.GetGameStateResponse.game:type_name -> scout.Game
-	3,  // 5: scout.GetPlayerStateResponse.player:type_name -> scout.Player
-	5,  // 6: scout.ScoutService.CreateGame:input_type -> scout.CreateGameRequest
-	7,  // 7: scout.ScoutService.PlayerAction:input_type -> scout.PlayerActionRequest
-	9,  // 8: scout.ScoutService.GetGameState:input_type -> scout.GetGameStateRequest
-	11, // 9: scout.ScoutService.GetPlayerState:input_type -> scout.GetPlayerStateRequest
-	13, // 10: scout.ScoutService.GetValidActions:input_type -> scout.GetValidActionsRequest
-	6,  // 11: scout.ScoutService.CreateGame:output_type -> scout.CreateGameResponse
-	8,  // 12: scout.ScoutService.PlayerAction:output_type -> scout.PlayerActionResponse
-	10, // 13: scout.ScoutService.GetGameState:output_type -> scout.GetGameStateResponse
-	12, // 14: scout.ScoutService.GetPlayerState:output_type -> scout.GetPlayerStateResponse
-	14, // 15: scout.ScoutService.GetValidActions:output_type -> scout.GetValidActionsResponse
-	11, // [11:16] is the sub-list for method output_type
-	6,  // [6:11] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	5,  // 2: scout.Game.player_hand_size:type_name -> scout.PlayerHandSize
+	4,  // 3: scout.Player.hand:type_name -> scout.Card
+	1,  // 4: scout.PlayerActionRequest.action:type_name -> scout.Action
+	2,  // 5: scout.GetGameStateResponse.game:type_name -> scout.Game
+	3,  // 6: scout.GetPlayerStateResponse.player:type_name -> scout.Player
+	6,  // 7: scout.ScoutService.CreateGame:input_type -> scout.CreateGameRequest
+	8,  // 8: scout.ScoutService.PlayerAction:input_type -> scout.PlayerActionRequest
+	10, // 9: scout.ScoutService.GetGameState:input_type -> scout.GetGameStateRequest
+	12, // 10: scout.ScoutService.GetPlayerState:input_type -> scout.GetPlayerStateRequest
+	14, // 11: scout.ScoutService.GetValidActions:input_type -> scout.GetValidActionsRequest
+	7,  // 12: scout.ScoutService.CreateGame:output_type -> scout.CreateGameResponse
+	9,  // 13: scout.ScoutService.PlayerAction:output_type -> scout.PlayerActionResponse
+	11, // 14: scout.ScoutService.GetGameState:output_type -> scout.GetGameStateResponse
+	13, // 15: scout.ScoutService.GetPlayerState:output_type -> scout.GetPlayerStateResponse
+	15, // 16: scout.ScoutService.GetValidActions:output_type -> scout.GetValidActionsResponse
+	12, // [12:17] is the sub-list for method output_type
+	7,  // [7:12] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_proto_scout_proto_init() }
@@ -1013,7 +1079,7 @@ func file_proto_scout_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_scout_proto_rawDesc), len(file_proto_scout_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   14,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

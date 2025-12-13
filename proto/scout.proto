@@ -29,6 +29,7 @@ message Game {
   int32 consecutive_scouts = 5;
   int32 round = 6;
   bool complete = 7;
+  repeated PlayerHandSize player_hand_size= 8;
 }
 
 message Player {
@@ -43,6 +44,11 @@ message Player {
 message Card {
   int32 value1 = 1;
   int32 value2 = 2;
+}
+
+message PlayerHandSize {
+  int32 player_index = 1;
+  int32 hand_size = 2;
 }
 
 
