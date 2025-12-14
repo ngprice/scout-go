@@ -166,13 +166,14 @@ func (x *Action) GetShowLength() int32 {
 type Game struct {
 	state                protoimpl.MessageState `protogen:"open.v1"`
 	Id                   string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	ActivePlayerIndex    int32                  `protobuf:"varint,2,opt,name=active_player_index,json=activePlayerIndex,proto3" json:"active_player_index,omitempty"`
-	ActiveSet            []*Card                `protobuf:"bytes,3,rep,name=active_set,json=activeSet,proto3" json:"active_set,omitempty"`
-	ActiveSetPlayerIndex int32                  `protobuf:"varint,4,opt,name=active_set_player_index,json=activeSetPlayerIndex,proto3" json:"active_set_player_index,omitempty"`
-	ConsecutiveScouts    int32                  `protobuf:"varint,5,opt,name=consecutive_scouts,json=consecutiveScouts,proto3" json:"consecutive_scouts,omitempty"`
-	Round                int32                  `protobuf:"varint,6,opt,name=round,proto3" json:"round,omitempty"`
-	Complete             bool                   `protobuf:"varint,7,opt,name=complete,proto3" json:"complete,omitempty"`
-	PlayerHandSize       []*PlayerHandSize      `protobuf:"bytes,8,rep,name=player_hand_size,json=playerHandSize,proto3" json:"player_hand_size,omitempty"`
+	NumPlayers           int32                  `protobuf:"varint,2,opt,name=num_players,json=numPlayers,proto3" json:"num_players,omitempty"`
+	ActivePlayerIndex    int32                  `protobuf:"varint,3,opt,name=active_player_index,json=activePlayerIndex,proto3" json:"active_player_index,omitempty"`
+	ActiveSet            []*Card                `protobuf:"bytes,4,rep,name=active_set,json=activeSet,proto3" json:"active_set,omitempty"`
+	ActiveSetPlayerIndex int32                  `protobuf:"varint,5,opt,name=active_set_player_index,json=activeSetPlayerIndex,proto3" json:"active_set_player_index,omitempty"`
+	ConsecutiveScouts    int32                  `protobuf:"varint,6,opt,name=consecutive_scouts,json=consecutiveScouts,proto3" json:"consecutive_scouts,omitempty"`
+	Round                int32                  `protobuf:"varint,7,opt,name=round,proto3" json:"round,omitempty"`
+	Complete             bool                   `protobuf:"varint,8,opt,name=complete,proto3" json:"complete,omitempty"`
+	PlayerStates         []*PlayerState         `protobuf:"bytes,9,rep,name=player_states,json=playerStates,proto3" json:"player_states,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
 }
@@ -212,6 +213,13 @@ func (x *Game) GetId() string {
 		return x.Id
 	}
 	return ""
+}
+
+func (x *Game) GetNumPlayers() int32 {
+	if x != nil {
+		return x.NumPlayers
+	}
+	return 0
 }
 
 func (x *Game) GetActivePlayerIndex() int32 {
@@ -256,9 +264,9 @@ func (x *Game) GetComplete() bool {
 	return false
 }
 
-func (x *Game) GetPlayerHandSize() []*PlayerHandSize {
+func (x *Game) GetPlayerStates() []*PlayerState {
 	if x != nil {
-		return x.PlayerHandSize
+		return x.PlayerStates
 	}
 	return nil
 }
@@ -399,28 +407,29 @@ func (x *Card) GetValue2() int32 {
 	return 0
 }
 
-type PlayerHandSize struct {
+type PlayerState struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	PlayerIndex   int32                  `protobuf:"varint,1,opt,name=player_index,json=playerIndex,proto3" json:"player_index,omitempty"`
 	HandSize      int32                  `protobuf:"varint,2,opt,name=hand_size,json=handSize,proto3" json:"hand_size,omitempty"`
+	Score         int32                  `protobuf:"varint,3,opt,name=score,proto3" json:"score,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *PlayerHandSize) Reset() {
-	*x = PlayerHandSize{}
+func (x *PlayerState) Reset() {
+	*x = PlayerState{}
 	mi := &file_proto_scout_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *PlayerHandSize) String() string {
+func (x *PlayerState) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PlayerHandSize) ProtoMessage() {}
+func (*PlayerState) ProtoMessage() {}
 
-func (x *PlayerHandSize) ProtoReflect() protoreflect.Message {
+func (x *PlayerState) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_scout_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -432,21 +441,28 @@ func (x *PlayerHandSize) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PlayerHandSize.ProtoReflect.Descriptor instead.
-func (*PlayerHandSize) Descriptor() ([]byte, []int) {
+// Deprecated: Use PlayerState.ProtoReflect.Descriptor instead.
+func (*PlayerState) Descriptor() ([]byte, []int) {
 	return file_proto_scout_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *PlayerHandSize) GetPlayerIndex() int32 {
+func (x *PlayerState) GetPlayerIndex() int32 {
 	if x != nil {
 		return x.PlayerIndex
 	}
 	return 0
 }
 
-func (x *PlayerHandSize) GetHandSize() int32 {
+func (x *PlayerState) GetHandSize() int32 {
 	if x != nil {
 		return x.HandSize
+	}
+	return 0
+}
+
+func (x *PlayerState) GetScore() int32 {
+	if x != nil {
+		return x.Score
 	}
 	return 0
 }
@@ -953,17 +969,19 @@ const file_proto_scout_proto_rawDesc = "" +
 	"ActionShow\x10\x02\x12\x16\n" +
 	"\x12ActionScoutAndShow\x10\x03\x12\x1d\n" +
 	"\x19ActionScoutAndShowReverse\x10\x04\x12\x15\n" +
-	"\x11ActionReverseHand\x10\x05\"\xcb\x02\n" +
+	"\x11ActionReverseHand\x10\x05\"\xe4\x02\n" +
 	"\x04Game\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12.\n" +
-	"\x13active_player_index\x18\x02 \x01(\x05R\x11activePlayerIndex\x12*\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1f\n" +
+	"\vnum_players\x18\x02 \x01(\x05R\n" +
+	"numPlayers\x12.\n" +
+	"\x13active_player_index\x18\x03 \x01(\x05R\x11activePlayerIndex\x12*\n" +
 	"\n" +
-	"active_set\x18\x03 \x03(\v2\v.scout.CardR\tactiveSet\x125\n" +
-	"\x17active_set_player_index\x18\x04 \x01(\x05R\x14activeSetPlayerIndex\x12-\n" +
-	"\x12consecutive_scouts\x18\x05 \x01(\x05R\x11consecutiveScouts\x12\x14\n" +
-	"\x05round\x18\x06 \x01(\x05R\x05round\x12\x1a\n" +
-	"\bcomplete\x18\a \x01(\bR\bcomplete\x12?\n" +
-	"\x10player_hand_size\x18\b \x03(\v2\x15.scout.PlayerHandSizeR\x0eplayerHandSize\"\xc0\x01\n" +
+	"active_set\x18\x04 \x03(\v2\v.scout.CardR\tactiveSet\x125\n" +
+	"\x17active_set_player_index\x18\x05 \x01(\x05R\x14activeSetPlayerIndex\x12-\n" +
+	"\x12consecutive_scouts\x18\x06 \x01(\x05R\x11consecutiveScouts\x12\x14\n" +
+	"\x05round\x18\a \x01(\x05R\x05round\x12\x1a\n" +
+	"\bcomplete\x18\b \x01(\bR\bcomplete\x127\n" +
+	"\rplayer_states\x18\t \x03(\v2\x12.scout.PlayerStateR\fplayerStates\"\xc0\x01\n" +
 	"\x06Player\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05index\x18\x02 \x01(\x05R\x05index\x12\x14\n" +
@@ -973,10 +991,11 @@ const file_proto_scout_proto_rawDesc = "" +
 	"\x12can_scout_and_show\x18\x06 \x01(\bR\x0fcanScoutAndShow\"6\n" +
 	"\x04Card\x12\x16\n" +
 	"\x06value1\x18\x01 \x01(\x05R\x06value1\x12\x16\n" +
-	"\x06value2\x18\x02 \x01(\x05R\x06value2\"P\n" +
-	"\x0ePlayerHandSize\x12!\n" +
+	"\x06value2\x18\x02 \x01(\x05R\x06value2\"c\n" +
+	"\vPlayerState\x12!\n" +
 	"\fplayer_index\x18\x01 \x01(\x05R\vplayerIndex\x12\x1b\n" +
-	"\thand_size\x18\x02 \x01(\x05R\bhandSize\"4\n" +
+	"\thand_size\x18\x02 \x01(\x05R\bhandSize\x12\x14\n" +
+	"\x05score\x18\x03 \x01(\x05R\x05score\"4\n" +
 	"\x11CreateGameRequest\x12\x1f\n" +
 	"\vnum_players\x18\x01 \x01(\x05R\n" +
 	"numPlayers\"-\n" +
@@ -1031,7 +1050,7 @@ var file_proto_scout_proto_goTypes = []any{
 	(*Game)(nil),                    // 2: scout.Game
 	(*Player)(nil),                  // 3: scout.Player
 	(*Card)(nil),                    // 4: scout.Card
-	(*PlayerHandSize)(nil),          // 5: scout.PlayerHandSize
+	(*PlayerState)(nil),             // 5: scout.PlayerState
 	(*CreateGameRequest)(nil),       // 6: scout.CreateGameRequest
 	(*CreateGameResponse)(nil),      // 7: scout.CreateGameResponse
 	(*PlayerActionRequest)(nil),     // 8: scout.PlayerActionRequest
@@ -1046,7 +1065,7 @@ var file_proto_scout_proto_goTypes = []any{
 var file_proto_scout_proto_depIdxs = []int32{
 	0,  // 0: scout.Action.action_type:type_name -> scout.Action.ActionType
 	4,  // 1: scout.Game.active_set:type_name -> scout.Card
-	5,  // 2: scout.Game.player_hand_size:type_name -> scout.PlayerHandSize
+	5,  // 2: scout.Game.player_states:type_name -> scout.PlayerState
 	4,  // 3: scout.Player.hand:type_name -> scout.Card
 	1,  // 4: scout.PlayerActionRequest.action:type_name -> scout.Action
 	2,  // 5: scout.GetGameStateResponse.game:type_name -> scout.Game

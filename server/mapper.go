@@ -9,6 +9,7 @@ import (
 func (g *Game) ToProto() *pb.Game {
 	protoGame := &pb.Game{
 		Id:                g.Id,
+		NumPlayers:        int32(g.NumPlayers),
 		ConsecutiveScouts: int32(g.ConsecutiveScouts),
 		Round:             int32(g.Round),
 		Complete:          g.Complete,
@@ -27,11 +28,12 @@ func (g *Game) ToProto() *pb.Game {
 	}
 
 	for _, player := range g.Players {
-		player_hand := &pb.PlayerHandSize{
+		player_state := &pb.PlayerState{
 			PlayerIndex: int32(player.Index),
 			HandSize:    int32(len(player.Hand)),
+			Score:       int32(player.Score),
 		}
-		protoGame.PlayerHandSize = append(protoGame.PlayerHandSize, player_hand)
+		protoGame.PlayerStates = append(protoGame.PlayerStates, player_state)
 	}
 
 	return protoGame

@@ -9,6 +9,7 @@ import (
 
 type Game struct {
 	Id                string
+	NumPlayers        int
 	Players           []*Player
 	ActivePlayer      *Player
 	ActiveSet         []*Card
@@ -38,6 +39,7 @@ func NewGame(numPlayers int) (*Game, RulesViolation) {
 
 	return &Game{
 		Id:           uuid.New().String(),
+		NumPlayers:   numPlayers,
 		Players:      players,
 		ActivePlayer: players[0],
 	}, nil
