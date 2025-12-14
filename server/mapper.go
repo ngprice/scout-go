@@ -71,11 +71,11 @@ func (c *Card) ToProto() *pb.Card {
 
 func ToActionSpec(action *pb.Action) *ActionSpec {
 	return &ActionSpec{
-		ID:   0, // internal use only
-		Type: ActionType(action.ActionType),
-		A:    int(action.ParamA),
-		B:    int(action.ParamB),
-		C:    int(action.ParamC),
-		D:    int(action.ParamD),
+		ID:             0, // internal use only
+		Type:           ActionType(action.ActionType),
+		ScoutTakeIndex: int(action.ScoutTakeIndex),
+		ScoutPutIndex:  int(action.ScoutPutIndex),
+		ShowFirstIndex: int(action.ShowFirstIndex),
+		ShowLength:     int(action.ShowLength),
 	}
 }

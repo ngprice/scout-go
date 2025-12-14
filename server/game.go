@@ -56,6 +56,29 @@ func (g *Game) PlayerAction(playerIndex int, action *ActionSpec) RulesViolation 
 		return RulesViolation(fmt.Errorf("action is invalid"))
 	}
 
+	var err RulesViolation
+
+	switch action.Type {
+	case ActionScout:
+		err = g.scoutAction(action.ScoutTakeIndex, action.ScoutPutIndex)
+	case ActionScoutReverse:
+		err = g.scoutActionReverse(action.ScoutTakeIndex, action.ScoutPutIndex)
+	case ActionShow:
+		err = g.showAction(action.ShowFirstIndex, action.ShowLength)
+	case ActionScoutAndShow:
+		err = g.scoutAndShowAction(action.ScoutTakeIndex, action.ScoutPutIndex, action.ShowFirstIndex, action.ShowLength)
+	case ActionScoutAndShowReverse:
+		err = g.scoutAndShowActionReverse(action.ScoutTakeIndex, action.ScoutPutIndex, action.ShowFirstIndex, action.ShowLength)
+	case ActionReverseHand:
+		g.ActivePlayer.ReverseHand()
+	default:
+		return RulesViolation(fmt.Errorf("unknown action"))
+	}
+
+	if err != nil {
+		return err
+	}
+
 	// prevent reverse hand after the first round
 	g.ActivePlayer.CanReverseHand = false
 
@@ -77,15 +100,15 @@ func (g *Game) IsActionValid(playerIndex int, action *ActionSpec) bool {
 
 	switch action.Type {
 	case ActionScout:
-		return g.isValidScout(p, action.A, action.B)
+		return g.isValidScout(p, action.ScoutTakeIndex, action.ScoutPutIndex)
 	case ActionScoutReverse:
-		return g.isValidScout(p, action.A, action.B)
+		return g.isValidScout(p, action.ScoutTakeIndex, action.ScoutPutIndex)
 	case ActionShow:
-		return g.isValidShow(p.Hand, action.A, action.B)
+		return g.isValidShow(p.Hand, action.ShowFirstIndex, action.ShowLength)
 	case ActionScoutAndShow:
-		return g.isValidScoutAndShow(p, action.A, action.B, action.C, action.D)
+		return g.isValidScoutAndShow(p, action.ScoutTakeIndex, action.ScoutPutIndex, action.ShowFirstIndex, action.ShowLength)
 	case ActionScoutAndShowReverse:
-		return g.isValidScoutAndShowReverse(p, action.A, action.B, action.C, action.D)
+		return g.isValidScoutAndShowReverse(p, action.ScoutTakeIndex, action.ScoutPutIndex, action.ShowFirstIndex, action.ShowLength)
 	case ActionReverseHand:
 		return p.CanReverseHand
 	default:

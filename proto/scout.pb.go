@@ -80,15 +80,15 @@ func (Action_ActionType) EnumDescriptor() ([]byte, []int) {
 }
 
 type Action struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	ActionType    Action_ActionType      `protobuf:"varint,2,opt,name=actionType,proto3,enum=scout.Action_ActionType" json:"actionType,omitempty"`
-	ParamA        int32                  `protobuf:"varint,3,opt,name=paramA,proto3" json:"paramA,omitempty"`
-	ParamB        int32                  `protobuf:"varint,4,opt,name=paramB,proto3" json:"paramB,omitempty"`
-	ParamC        int32                  `protobuf:"varint,5,opt,name=paramC,proto3" json:"paramC,omitempty"`
-	ParamD        int32                  `protobuf:"varint,6,opt,name=paramD,proto3" json:"paramD,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Id             int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	ActionType     Action_ActionType      `protobuf:"varint,2,opt,name=action_type,json=actionType,proto3,enum=scout.Action_ActionType" json:"action_type,omitempty"`
+	ScoutTakeIndex int32                  `protobuf:"varint,3,opt,name=scout_take_index,json=scoutTakeIndex,proto3" json:"scout_take_index,omitempty"`
+	ScoutPutIndex  int32                  `protobuf:"varint,4,opt,name=scout_put_index,json=scoutPutIndex,proto3" json:"scout_put_index,omitempty"`
+	ShowFirstIndex int32                  `protobuf:"varint,5,opt,name=show_first_index,json=showFirstIndex,proto3" json:"show_first_index,omitempty"`
+	ShowLength     int32                  `protobuf:"varint,6,opt,name=show_length,json=showLength,proto3" json:"show_length,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *Action) Reset() {
@@ -135,30 +135,30 @@ func (x *Action) GetActionType() Action_ActionType {
 	return Action_ActionScout
 }
 
-func (x *Action) GetParamA() int32 {
+func (x *Action) GetScoutTakeIndex() int32 {
 	if x != nil {
-		return x.ParamA
+		return x.ScoutTakeIndex
 	}
 	return 0
 }
 
-func (x *Action) GetParamB() int32 {
+func (x *Action) GetScoutPutIndex() int32 {
 	if x != nil {
-		return x.ParamB
+		return x.ScoutPutIndex
 	}
 	return 0
 }
 
-func (x *Action) GetParamC() int32 {
+func (x *Action) GetShowFirstIndex() int32 {
 	if x != nil {
-		return x.ParamC
+		return x.ShowFirstIndex
 	}
 	return 0
 }
 
-func (x *Action) GetParamD() int32 {
+func (x *Action) GetShowLength() int32 {
 	if x != nil {
-		return x.ParamD
+		return x.ShowLength
 	}
 	return 0
 }
@@ -935,16 +935,16 @@ var File_proto_scout_proto protoreflect.FileDescriptor
 
 const file_proto_scout_proto_rawDesc = "" +
 	"\n" +
-	"\x11proto/scout.proto\x12\x05scout\"\xc8\x02\n" +
+	"\x11proto/scout.proto\x12\x05scout\"\x86\x03\n" +
 	"\x06Action\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x05R\x02id\x128\n" +
-	"\n" +
-	"actionType\x18\x02 \x01(\x0e2\x18.scout.Action.ActionTypeR\n" +
-	"actionType\x12\x16\n" +
-	"\x06paramA\x18\x03 \x01(\x05R\x06paramA\x12\x16\n" +
-	"\x06paramB\x18\x04 \x01(\x05R\x06paramB\x12\x16\n" +
-	"\x06paramC\x18\x05 \x01(\x05R\x06paramC\x12\x16\n" +
-	"\x06paramD\x18\x06 \x01(\x05R\x06paramD\"\x93\x01\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x129\n" +
+	"\vaction_type\x18\x02 \x01(\x0e2\x18.scout.Action.ActionTypeR\n" +
+	"actionType\x12(\n" +
+	"\x10scout_take_index\x18\x03 \x01(\x05R\x0escoutTakeIndex\x12&\n" +
+	"\x0fscout_put_index\x18\x04 \x01(\x05R\rscoutPutIndex\x12(\n" +
+	"\x10show_first_index\x18\x05 \x01(\x05R\x0eshowFirstIndex\x12\x1f\n" +
+	"\vshow_length\x18\x06 \x01(\x05R\n" +
+	"showLength\"\x93\x01\n" +
 	"\n" +
 	"ActionType\x12\x0f\n" +
 	"\vActionScout\x10\x00\x12\x16\n" +
@@ -1044,7 +1044,7 @@ var file_proto_scout_proto_goTypes = []any{
 	(*GetValidActionsResponse)(nil), // 15: scout.GetValidActionsResponse
 }
 var file_proto_scout_proto_depIdxs = []int32{
-	0,  // 0: scout.Action.actionType:type_name -> scout.Action.ActionType
+	0,  // 0: scout.Action.action_type:type_name -> scout.Action.ActionType
 	4,  // 1: scout.Game.active_set:type_name -> scout.Card
 	5,  // 2: scout.Game.player_hand_size:type_name -> scout.PlayerHandSize
 	4,  // 3: scout.Player.hand:type_name -> scout.Card

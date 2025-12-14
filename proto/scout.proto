@@ -14,11 +14,11 @@ message Action {
       ActionReverseHand = 5;
   }
   int32 id = 1;
-  ActionType actionType = 2;
-  int32 paramA = 3;
-  int32 paramB = 4;
-  int32 paramC = 5;
-  int32 paramD = 6;
+  ActionType action_type = 2;
+  int32 scout_take_index = 3;
+  int32 scout_put_index = 4;
+  int32 show_first_index = 5;
+  int32 show_length = 6;
 }
 
 message Game {
