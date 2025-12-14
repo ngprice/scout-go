@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"strconv"
+	"sync"
 
 	"github.com/google/uuid"
 )
@@ -17,6 +18,7 @@ type Game struct {
 	ConsecutiveScouts int
 	Round             int
 	Complete          bool
+	mu                sync.RWMutex
 }
 
 func NewGame(numPlayers int) (*Game, RulesViolation) {
@@ -46,6 +48,9 @@ func NewGame(numPlayers int) (*Game, RulesViolation) {
 }
 
 func (g *Game) PlayerAction(playerIndex int, action *ActionSpec) RulesViolation {
+	g.mu.Lock()
+	defer g.mu.Unlock()
+
 	if g.Complete {
 		return RulesViolation(fmt.Errorf("game is complete"))
 	}

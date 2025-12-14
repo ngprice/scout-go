@@ -9,6 +9,9 @@ const (
 	ActionReverseHand
 )
 
+const MAX_HAND_SIZE = 20       // practical max
+const MAX_ACTIVE_SET_SIZE = 10 // straight 1-10
+
 type ActionType int
 
 type ActionSpec struct {

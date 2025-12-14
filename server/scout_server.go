@@ -3,14 +3,15 @@ package server
 import (
 	"context"
 	"fmt"
+	"sync"
+
 	pb "scout-go/proto"
 )
 
-const MAX_HAND_SIZE = 20       // practical max
-const MAX_ACTIVE_SET_SIZE = 10 // straight 1-10
-
 type ScoutServer struct {
 	pb.UnimplementedScoutServiceServer
+
+	mu         sync.RWMutex
 	Games      map[string]*Game
 	AllActions []ActionSpec
 }
@@ -27,15 +28,20 @@ func (s *ScoutServer) CreateGame(ctx context.Context, req *pb.CreateGameRequest)
 	if err != nil {
 		return nil, err
 	}
-	s.Games[game.Id] = game
 
-	return &pb.CreateGameResponse{
-		GameId: game.Id,
-	}, nil
+	s.mu.Lock()
+	s.Games[game.Id] = game
+	s.mu.Unlock()
+
+	return &pb.CreateGameResponse{GameId: game.Id}, nil
 }
 
 func (s *ScoutServer) PlayerAction(ctx context.Context, req *pb.PlayerActionRequest) (*pb.PlayerActionResponse, error) {
+	// Read-lock just to find the game pointer.
+	s.mu.RLock()
 	game := s.Games[req.GameId]
+	s.mu.RUnlock()
+
 	if game == nil {
 		return nil, fmt.Errorf("invalid game_id")
 	}
@@ -53,21 +59,49 @@ func (s *ScoutServer) PlayerAction(ctx context.Context, req *pb.PlayerActionRequ
 }
 
 func (s *ScoutServer) GetGameState(ctx context.Context, req *pb.GetGameStateRequest) (*pb.GetGameStateResponse, error) {
-	return &pb.GetGameStateResponse{
-		Game: s.Games[req.GameId].ToProto(),
-	}, nil
+	s.mu.RLock()
+	game := s.Games[req.GameId]
+	s.mu.RUnlock()
+
+	if game == nil {
+		return nil, fmt.Errorf("invalid game_id")
+	}
+
+	// game.ToProto should be safe (either it locks internally or ToProto snapshots)
+	return &pb.GetGameStateResponse{Game: game.ToProto()}, nil
 }
 
 func (s *ScoutServer) GetPlayerState(ctx context.Context, req *pb.GetPlayerStateRequest) (*pb.GetPlayerStateResponse, error) {
+	s.mu.RLock()
+	game := s.Games[req.GameId]
+	s.mu.RUnlock()
+
+	if game == nil {
+		return nil, fmt.Errorf("invalid game_id")
+	}
+	if int(req.PlayerIndex) < 0 || int(req.PlayerIndex) >= len(game.Players) {
+		return nil, fmt.Errorf("invalid player_index")
+	}
+
+	// game.Players[...] access should be safe (again: game-level lock ideally)
 	return &pb.GetPlayerStateResponse{
-		Player: s.Games[req.GameId].Players[req.PlayerIndex].ToProto(),
+		Player: game.Players[req.PlayerIndex].ToProto(),
 	}, nil
 }
 
 func (s *ScoutServer) GetValidActions(ctx context.Context, req *pb.GetValidActionsRequest) (*pb.GetValidActionsResponse, error) {
+	s.mu.RLock()
 	game := s.Games[req.GameId]
-	player := game.Players[req.PlayerIndex]
+	s.mu.RUnlock()
 
+	if game == nil {
+		return nil, fmt.Errorf("invalid game_id")
+	}
+	if int(req.PlayerIndex) < 0 || int(req.PlayerIndex) >= len(game.Players) {
+		return nil, fmt.Errorf("invalid player_index")
+	}
+
+	player := game.Players[req.PlayerIndex]
 	mask := make([]bool, len(s.AllActions))
 
 	for _, action := range s.AllActions {

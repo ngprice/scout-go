@@ -7,6 +7,9 @@ import (
 )
 
 func (g *Game) ToProto() *pb.Game {
+	g.mu.RLock()
+	defer g.mu.RUnlock()
+
 	protoGame := &pb.Game{
 		Id:                g.Id,
 		NumPlayers:        int32(g.NumPlayers),
