@@ -123,6 +123,105 @@ func (g *Game) IsActionValid(playerIndex int, action *ActionSpec) bool {
 	}
 }
 
+func (g *Game) isValidScout(p *Player, takeIndex, putIndex int) bool {
+	if len(g.ActiveSet) == 0 {
+		return false
+	}
+	if putIndex > len(p.Hand) {
+		return false
+	}
+	// can only scout from the 'ends' of the active set
+	return !(takeIndex != 0 && takeIndex != len(g.ActiveSet)-1)
+}
+
+func (g *Game) isValidShow(hand []*Card, firstIndex, length int) bool {
+	if firstIndex < 0 || firstIndex+length > len(hand) {
+		return false
+	}
+	set := hand[firstIndex : firstIndex+length]
+	err := validateSet(set)
+	if err != nil {
+		return false
+	}
+	return setComparison(set, g.ActiveSet)
+}
+
+func (g *Game) isValidScoutAndShow(p *Player, takeIndex, putIndex, startIndex, length int) bool {
+	if g.isValidScout(p, takeIndex, putIndex) {
+		// assemble the hand as it would be after scout
+		hand := make([]*Card, len(p.Hand))
+		copy(hand, p.Hand)
+		cardCopy := &Card{
+			Value1: g.ActiveSet[takeIndex].Value1,
+			Value2: g.ActiveSet[takeIndex].Value2,
+		}
+		hand = append(hand[:putIndex], append([]*Card{cardCopy}, hand[putIndex:]...)...)
+		return g.isValidShow(hand, startIndex, length)
+	}
+	return false
+}
+
+func (g *Game) isValidScoutAndShowReverse(p *Player, takeIndex, putIndex, startIndex, length int) bool {
+	if g.isValidScout(p, takeIndex, putIndex) {
+		// assemble the hand as it would be after scout
+		hand := make([]*Card, len(p.Hand))
+		copy(hand, p.Hand)
+		cardCopy := &Card{
+			Value1: g.ActiveSet[takeIndex].Value1,
+			Value2: g.ActiveSet[takeIndex].Value2,
+		}
+		cardCopy.ReverseValues()
+		hand = append(hand[:putIndex], append([]*Card{cardCopy}, hand[putIndex:]...)...)
+		return g.isValidShow(hand, startIndex, length)
+	}
+	return false
+}
+
+// returns true if set beats compSet, false otherwise
+func setComparison(set, compSet []*Card) bool {
+	// always beat the empty set
+	if len(compSet) == 0 {
+		return true
+	}
+
+	// always beat a smaller set
+	if len(set) > len(compSet) {
+		return true
+	} else if len(set) < len(compSet) {
+		return false
+	}
+
+	// matching beats consecutive
+	isSetConsecutive := func(s []*Card) bool {
+		if len(s) < 2 {
+			return false
+		}
+		return s[0].Value1 != s[1].Value1
+	}
+	if !isSetConsecutive(set) {
+		if isSetConsecutive(compSet) {
+			return true
+		}
+	} else {
+		if !isSetConsecutive(compSet) {
+			return false
+		}
+	}
+
+	// lowest number is tie breaker
+	minValue := func(s []*Card) int {
+		min := s[0].Value1
+		for _, card := range s {
+			if card.Value1 < min {
+				min = card.Value1
+			}
+		}
+		return min
+	}
+
+	return minValue(set) > minValue(compSet)
+}
+
 func (g *Game) checkRoundCompletion() {
 	// all others players have scouted in succession
 	if g.ConsecutiveScouts == len(g.Players)-1 {
