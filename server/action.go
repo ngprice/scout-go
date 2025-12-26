@@ -107,6 +107,7 @@ func (g *Game) scoutAndShowAction(takeIndex, putIndex, firstIndex, length int) R
 	if err != nil {
 		return err
 	}
+	g.ConsecutiveScouts -= 1 // since these don't count for scouting
 	err = g.showAction(firstIndex, length)
 	if err != nil {
 		return err
@@ -122,6 +123,7 @@ func (g *Game) scoutAndShowActionReverse(takeIndex, putIndex, firstIndex, length
 	if err != nil {
 		return err
 	}
+	g.ConsecutiveScouts -= 1 // since these don't count for scouting
 	err = g.showAction(firstIndex, length)
 	if err != nil {
 		return err
