@@ -32,19 +32,16 @@ func NewGame(numPlayers int) (*Game, RulesViolation) {
 		players[i] = player
 	}
 
-	deck, _ := NewGameDeck(numPlayers)
-
-	// deal cards to each player; players get same number of cards
-	for i := 0; i < len(deck); i++ {
-		players[i%numPlayers].Hand = append(players[i%numPlayers].Hand, deck[i])
-	}
-
-	return &Game{
+	g := &Game{
 		Id:           uuid.New().String(),
 		NumPlayers:   numPlayers,
 		Players:      players,
 		ActivePlayer: players[0],
-	}, nil
+	}
+
+	g.dealHands()
+
+	return g, nil
 }
 
 func (g *Game) PlayerAction(playerIndex int, action *ActionSpec) RulesViolation {
@@ -229,6 +226,14 @@ func setComparison(set, compSet []*Card) bool {
 	return minValue(set) > minValue(compSet)
 }
 
+// dealHands deals cards to each player; players get same number of cards
+func (g *Game) dealHands() {
+	deck, _ := NewGameDeck(g.NumPlayers)
+	for i := 0; i < len(deck); i++ {
+		g.Players[i%g.NumPlayers].Hand = append(g.Players[i%g.NumPlayers].Hand, deck[i])
+	}
+}
+
 func (g *Game) checkRoundCompletion() {
 	// all others players have scouted in succession
 	if g.ConsecutiveScouts == len(g.Players)-1 {
@@ -252,9 +257,11 @@ func (g *Game) checkGameCompletion() {
 		g.ConsecutiveScouts = 0
 		g.Complete = false
 		for _, p := range g.Players {
+			p.Hand = []*Card{}
 			p.CanReverseHand = true
 			p.CanScoutAndShow = true
 		}
+		g.dealHands()
 	}
 }
 
