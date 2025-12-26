@@ -225,6 +225,16 @@ func TestValidateSet(t *testing.T) {
 			set:     []*Card{{Value1: 4}, {Value1: 4}, {Value1: 6}, {Value1: 8}, {Value1: 8}},
 			wantErr: true,
 		},
+		{
+			name:    "zig zag set",
+			set:     []*Card{{Value1: 7}, {Value1: 8}, {Value1: 7}, {Value1: 8}},
+			wantErr: true,
+		},
+		{
+			name:    "zag zig set",
+			set:     []*Card{{Value1: 8}, {Value1: 7}, {Value1: 8}, {Value1: 7}},
+			wantErr: true,
+		},
 	}
 	for i, tc := range testCases {
 		err := validateSet(tc.set)
