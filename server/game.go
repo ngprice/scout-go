@@ -87,14 +87,16 @@ func (g *Game) PlayerAction(playerIndex int, action *ActionSpec) RulesViolation 
 	// prevent reverse hand after the first round
 	g.ActivePlayer.CanReverseHand = false
 
-	// set the next active player
-	g.ActivePlayer = g.Players[(g.ActivePlayer.Index+1)%len(g.Players)]
-
 	if g.checkRoundCompletion(); g.Complete {
 		g.calculateScores()
 		if g.checkGameCompletion(); g.Complete {
 			return nil // game over
+		} else {
+			g.resetNextRound()
 		}
+	} else {
+		// set the next active player
+		g.ActivePlayer = g.Players[(g.ActivePlayer.Index+1)%len(g.Players)]
 	}
 
 	return nil
@@ -248,21 +250,21 @@ func (g *Game) checkRoundCompletion() {
 func (g *Game) checkGameCompletion() {
 	g.Round++
 	// play a number of rounds equal to number of players
-	if g.Round >= len(g.Players) {
-		g.Complete = true
-	} else { // reset for next round
-		g.ActivePlayer = g.Players[g.Round]
-		g.ActiveSet = []*Card{}
-		g.ActiveSetPlayer = nil
-		g.ConsecutiveScouts = 0
-		g.Complete = false
-		for _, p := range g.Players {
-			p.Hand = []*Card{}
-			p.CanReverseHand = true
-			p.CanScoutAndShow = true
-		}
-		g.dealHands()
+	g.Complete = g.Round >= g.NumPlayers
+}
+
+func (g *Game) resetNextRound() {
+	g.Complete = false
+	g.ActivePlayer = g.Players[g.Round]
+	g.ActiveSet = []*Card{}
+	g.ActiveSetPlayer = nil
+	g.ConsecutiveScouts = 0
+	for _, p := range g.Players {
+		p.Hand = []*Card{}
+		p.CanReverseHand = true
+		p.CanScoutAndShow = true
 	}
+	g.dealHands()
 }
 
 func (g *Game) calculateScores() {
