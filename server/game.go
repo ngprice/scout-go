@@ -148,6 +148,9 @@ func (g *Game) isValidShow(hand []*Card, firstIndex, length int) bool {
 }
 
 func (g *Game) isValidScoutAndShow(p *Player, takeIndex, putIndex, startIndex, length int) bool {
+	if !p.CanScoutAndShow {
+		return false
+	}
 	if g.isValidScout(p, takeIndex, putIndex) {
 		// assemble the hand as it would be after scout
 		hand := make([]*Card, len(p.Hand))
@@ -163,6 +166,9 @@ func (g *Game) isValidScoutAndShow(p *Player, takeIndex, putIndex, startIndex, l
 }
 
 func (g *Game) isValidScoutAndShowReverse(p *Player, takeIndex, putIndex, startIndex, length int) bool {
+	if !p.CanScoutAndShow {
+		return false
+	}
 	if g.isValidScout(p, takeIndex, putIndex) {
 		// assemble the hand as it would be after scout
 		hand := make([]*Card, len(p.Hand))
