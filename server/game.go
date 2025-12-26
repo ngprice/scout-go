@@ -78,6 +78,7 @@ func (g *Game) PlayerAction(playerIndex int, action *ActionSpec) RulesViolation 
 		err = g.scoutAndShowActionReverse(action.ScoutTakeIndex, action.ScoutPutIndex, action.ShowFirstIndex, action.ShowLength)
 	case ActionReverseHand:
 		g.ActivePlayer.ReverseHand()
+		return nil
 	default:
 		return RulesViolation(fmt.Errorf("unknown action"))
 	}
